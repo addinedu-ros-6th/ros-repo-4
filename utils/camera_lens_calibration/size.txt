@@ -1,0 +1,45 @@
+# size unit : mm
+
+chessboard = {
+    "1" : {
+        "rows" : 5,
+        "columns" : 7,
+        "size" : {
+            "chess" : 50.00
+        }
+    },
+    "2" : {
+        "rows" : 6,
+        "columns" : 8,
+        "size" : {
+            "chess" : 42.40
+        }
+    },
+    "3" : {
+        "rows" : 7,
+        "columns" : 9,
+        "size" : {
+            "chess" : 39.25
+        }
+    }   
+}
+
+chess_and_aruco_board = {
+    "1" : {
+        "rows" : 11,
+        "columns" : 18,
+        "size" : {
+            "chess" : 19.41,
+            "aruco" : 13.94
+        }
+    },
+    "2": {
+        "rows" : 3,
+        "columns" : 5,
+        "size" : {
+            "chess" : 72.72,
+            "aruco" : 54.55
+        }
+    }
+
+}
