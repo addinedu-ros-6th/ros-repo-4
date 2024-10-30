@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Index Page</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <style>
+        /* 전체 배경색 설정 */
+        body {
+            background-color: lightblue;
+        }
+
+        /* 상단 아이콘 위치 조정 및 크기 확대 */
+        .top-left-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2rem; /* 아이콘 크기 조정 */
+            color: #0056b3;  /* 아이콘 색상 설정 */
+            margin-bottom: 10px;
+        }
+
+        /* 우측 상단 뒤로 가기 아이콘 */
+        .top-right-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem; /* 뒤로 가기 버튼 크기 */
+            color:#0056b3;
+        }
+
+        /* 이미지와 버튼 사이 간격 */
+        .main-image {
+            margin-bottom: 5px; /* 이미지와 버튼 사이의 공간 */
+            width: 380px;        /* 이미지 크기 */
+            height: auto;        /* 종횡비 유지 */
+        }
+
+        /* 하단 수평 박스 컨테이너 */
+        .horizontal-boxes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;                   /* 두 박스 사이 간격 */
+            margin-top: 5px;            /* 상단 콘텐츠와 간격 */
+        }
+
+        /* 첫 번째 박스 스타일 */
+        .box-1 {
+            background-color: #228B22;   /* 진한 풀색 배경 */
+            color: white;                /* 흰색 텍스트 */
+            padding: 5px;
+            flex: 1;                     /* 동일한 너비 설정 */
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        /* 두 번째 박스 스타일 */
+        .box-2 {
+            background-color: lightblue;   /* 옅은 풀색 배경 */
+            color: black;                /* 검은색 텍스트 */
+            padding: 5px;
+            flex: 1;                     /* 동일한 너비 설정 */
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #228B22;
+        }
+    </style>
+</head>
+<body>
+    <!-- 좌측 상단 Home 아이콘 -->
+    <a href="/home" class="top-left-icon">
+        <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
+    </a>
+    <!-- 우측 상단 뒤로 가기 아이콘 -->
+    <a href="javascript:history.back()" class="top-right-icon">
+        <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
+    </a>
+    <br><br>
+    <div class="container text-center mt-5">
+        <h1>Registration</h1>
+        <p>Please show your face to backward camera.</p>
+        <!-- 수평 박스 컨테이너 -->
+        <div class="horizontal-boxes">
+            <!-- 첫 번째 박스 -->
+            <div class="box-1">
+                Step 1 <br> Face Recognition
+            </div>
+
+            <!-- 두 번째 박스 -->
+            <div class="box-2">
+                Step 2 <br> Ticket Scan
+            </div>
+        </div>
+        <div class="horizontal-boxes">
+            <!-- 세 번째 박스 -->
+            <div class="box-2">
+                Step 3 <br> Luggage Loading 
+            </div>
+
+            <!-- 네 번째 박스 -->
+            <div class="box-2">
+                Step 4 <br> Select Mode
+            </div>
+        </div>
+        <br><br>
+
+        <img src="images/face_recognition.png" alt="Porter Goose Image" class="main-image">
+        
+    </div>
+
+    
+    <!-- 오프라인 Bootstrap JS 연결 -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

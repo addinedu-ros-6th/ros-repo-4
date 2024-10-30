@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Index Page</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <style>
+        /* 전체 배경색 설정 */
+        body {
+            background-color: lightblue;
+        }
+
+        /* 상단 아이콘 위치 조정 및 크기 확대 */
+        .top-left-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2rem; /* 아이콘 크기 조정 */
+            color: #0056b3;  /* 아이콘 색상 설정 */
+            margin-bottom: 10px;
+        }
+
+        /* 우측 상단 뒤로 가기 아이콘 */
+        .top-right-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem; /* 뒤로 가기 버튼 크기 */
+            color:#0056b3;
+        }
+        
+        /* 화면 중앙에 버튼 위치 */
+        .centered-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200vh;
+        }
+
+        /* 버튼 스타일 설정 */
+        .btn-custom {
+            color: white;              /* 버튼 텍스트 색상 */
+            background-color: #0056b3; /* 기본 버튼 색상 (Bootstrap 기본 색) */
+            padding: 15px 15px;          /* 버튼 크기 조정 (위아래 20px, 좌우 40px) */
+            font-size: 1.2rem;           /* 버튼 텍스트 크기 */
+            border-radius: 8px;          /* 버튼 모서리 둥글게 */
+            margin-top: 5px;
+            width: 356px;
+        }
+
+        /* 버튼 호버 효과 */
+        .btn-custom:hover {
+            background-color: #0056b3; /* 호버 시 버튼 색상 */
+        }
+
+        /* 이미지와 버튼 사이 간격 */
+        .main-image {
+            margin-bottom: 5px; /* 이미지와 버튼 사이의 공간 */
+            width: 400px;        /* 이미지 크기 */
+            height: auto;        /* 종횡비 유지 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 좌측 상단 Home 아이콘 -->
+    <a href="/home" class="top-left-icon">
+        <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
+    </a>
+    <!-- 우측 상단 뒤로 가기 아이콘 -->
+    <a href="javascript:history.back()" class="top-right-icon">
+        <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
+    </a>
+    <br><br>
+    <div class="container text-center mt-5">
+        <h1>Cargo Open</h1>
+        <p>Give me the item.</p>
+        <br><br>
+
+        <img src="images/cargo_open.webp"s alt="Porter Goose Image" class="main-image">
+        <br><br><br>
+        <a href="/auto_driving" class="btn btn-custom">It's loaded!</a>
+    </div> 
+
+    
+    <!-- 오프라인 Bootstrap JS 연결 -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

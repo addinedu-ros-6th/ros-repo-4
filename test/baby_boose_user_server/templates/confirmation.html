@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation Page</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <style>
+        /* 전체 배경색 설정 */
+        body {
+            background-color: lightblue;
+        }
+
+        /* 상단 아이콘 위치 조정 및 크기 확대 */
+        .top-left-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2rem; /* 아이콘 크기 조정 */
+            color: #0056b3;  /* 아이콘 색상 설정 */
+            margin-bottom: 10px;
+        }
+
+        /* 우측 상단 뒤로 가기 아이콘 */
+        .top-right-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem; /* 뒤로 가기 버튼 크기 */
+            color:#0056b3;
+        }
+        
+       /* 콘텐츠 레이아웃 스타일 */
+       .content {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 얼굴 이미지 자리 */
+        .face-image {
+            width: 120px;
+            height: 120px;
+            border: 1px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* 정보 텍스트 스타일 */
+        .info {
+            text-align: left;
+        }
+
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 두 개의 열 */
+            gap: 10px;                      /* 버튼 간격 */
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        
+        /* 버튼 스타일 설정 */
+        .btn-mode {
+            color: white;              /* 버튼 텍스트 색상 */
+            background-color: #0056b3; /* 기본 버튼 색상 (Bootstrap 기본 색) */
+            padding: 15px;             /* 버튼 크기 조정 */
+            font-size: 1.2rem;         /* 버튼 텍스트 크기 */
+            border-radius: 8px;        /* 버튼 모서리 둥글게 */
+            width: 100%;               /* 버튼이 각 셀에 꽉 차도록 설정 */
+            height: 60px;
+            text-align: center;
+        }
+
+        /* 버튼 호버 효과 */
+        .btn-mode:hover {
+            background-color: #003a70; /* 호버 시 버튼 색상 */
+        }
+
+        /* 설명 텍스트 스타일 */
+        .description {
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        /* 이미지와 버튼 사이 간격 */
+        .main-image {
+            margin-bottom: 5px; /* 이미지와 버튼 사이의 공간 */
+            width: 250px;        /* 이미지 크기 */
+            height: auto;        /* 종횡비 유지 */
+        }
+    
+    </style>
+</head>
+<body>
+    <!-- 좌측 상단 Home 아이콘 -->
+    <a href="/home" class="top-left-icon">
+        <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
+    </a>
+    <!-- 우측 상단 뒤로 가기 아이콘 -->
+    <a href="javascript:history.back()" class="top-right-icon">
+        <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
+    </a>
+    <br>
+    <div class="container text-center mt-5">
+        <h1>Is it right?</h1>
+        <br>
+        <div class="content">
+            <div class="face-image">
+                face<br>image
+            </div>
+            <div class="info">
+                <p>Name : Mr. Yonggon Yun</p>
+                <p>Flight no : CA758</p>
+                <p>Gate no : B33</p>
+                <p>Departure : 09:15</p>
+            </div>
+        </div>
+        <img src="images/porter_goose.png" alt="Porter Goose Image" class="main-image">
+
+        <!-- 설명 텍스트 -->
+        <div class="description">
+            The Service will be started<br>when you select YES.
+        </div>
+
+        <div class="button-grid">
+            <a href="/cargo_open" class="btn btn-mode">Yes</a>
+            <a href="/" class="btn btn-mode">No</a>
+        </div>    
+    </div>
+    
+    <!-- 오프라인 Bootstrap JS 연결 -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
