@@ -2,8 +2,10 @@
 
 설치 라이브러리
 
-* pip install fastapi
-* pip install "uvicorn[standard]"
+```
+pip install fastapi
+pip install "uvicorn[standard]"
+```
 
 ### 프로그램 실행
 
