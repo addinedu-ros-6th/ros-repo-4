@@ -14,4 +14,4 @@ uvicorn main:app --reload --host <현재 컴퓨터 내부 IP>
 
 ### client 접속
 
-브라우저에서 <IP>:8000 로 접속
+브라우저에서 IP:8000 로 접속
