@@ -5,7 +5,7 @@ import glob
 import pickle
 
 BOARD_NUM = "3"
-SAVE_DIR = "calibrated_chessboard160/"
+SAVE_DIR = "calibrated_minibot5/"
 
 # size unit : mm
 chessboard = {
@@ -46,7 +46,7 @@ objp[:, :2] = np.mgrid[0:pattern_size[0], 0:pattern_size[1]].T.reshape(-1, 2) * 
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob("origin_chessboard160/*.jpg")
+images = glob.glob("origin_minibot5/*.jpg")
 
 for fname in images:
     file_name = fname.split("/")[1]
@@ -108,7 +108,7 @@ print("\nDistortion coefficients:")
 print(dist_coeffs)
 
 # 보정 결과 저장
-with open("calibration_data160.pkl", "wb") as f:
+with open("calibration_minibot5.pkl", "wb") as f:
     pickle.dump({
         "camera_matrix": camera_matrix,
         "dist_coeffs": dist_coeffs,
