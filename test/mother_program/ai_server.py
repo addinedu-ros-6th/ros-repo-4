@@ -16,6 +16,7 @@ UDP_PORT4 = 9999   # 네 번째 카메라용 포트
 
 GON_ADDIN_5G = '192.168.0.45'
 GON_HOME = '192.168.1.16'
+MULTICAST_IP = '224.1.1.1'
 
 model = YOLO("yolov8s.pt")
 
@@ -25,7 +26,11 @@ class FrameReceiver:
 
         # UDP 소켓 설정
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_socket.bind(('0.0.0.0', udp_port))
+        self.udp_socket.bind((MULTICAST_IP, udp_port))
+        group = socket.inet_aton(MULTICAST_IP)
+        mreq = struct.pack('4sL', group, socket.INADDR_ANY)
+        self.udp_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
         self.frame_buffer = {}
         self.lock = threading.Lock()
         self.frame_queue = queue.Queue()  # 프레임을 전달할 큐
