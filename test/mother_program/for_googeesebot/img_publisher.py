@@ -100,6 +100,7 @@ import time
 
 # 서버 IP 및 포트 설정
 SERVER_IP = '192.168.1.16'
+MULTICAST_IP = '224.1.1.1'
 UDP_PORT1 = 9999  # 첫 번째 카메라용 포트
 UDP_PORT2 = 9998  # 두 번째 카메라용 포트
 MAX_DGRAM = 1300  # 패킷 크기를 MTU 이하로 설정하여 단편화 방지
@@ -138,7 +139,7 @@ def send_frame(cap, udp_socket, udp_port, frame_id):
 
         # 헤더 구성
         header = struct.pack(header_format, frame_id, total_chunks, seq_num, len(chunk), bg_num, br_code)
-        udp_socket.sendto(header + chunk, (SERVER_IP, udp_port))
+        udp_socket.sendto(header + chunk, (MULTICAST_IP, udp_port))
 
     # 전송 속도 조절
     time.sleep(0.05)  # 약 20fps
@@ -151,11 +152,15 @@ def camera_thread(cap_index, udp_port):
     if not cap.isOpened():
         print(f"카메라 {cap_index}을 열 수 없습니다.")
         return
-
+        
     # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    # multicast socket setting
+    ttl = struct.pack('b', 1)  # Time-to-live 설정
+    udp_socket.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
     frame_id = 0
     while True:
@@ -171,7 +176,7 @@ def camera_thread(cap_index, udp_port):
 
 # 스레드 생성
 thread1 = threading.Thread(target=camera_thread, args=(0, UDP_PORT1))
-thread2 = threading.Thread(target=camera_thread, args=(1, UDP_PORT2))
+thread2 = threading.Thread(target=camera_thread, args=(2, UDP_PORT2))
 
 # 스레드 시작
 thread1.start()
