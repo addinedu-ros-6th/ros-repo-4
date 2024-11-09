@@ -6,8 +6,8 @@ import cv2
 import time
 import queue
 
-UDP_PORT1 = 9997   # 첫 번째 내장 카메라용 포트
-UDP_PORT2 = 9996   # 두 번째 카메라용 포트
+UDP_PORT1 = 9996   # 첫 번째 내장 카메라용 포트
+UDP_PORT2 = 9997   # 두 번째 카메라용 포트
 UDP_PORT3 = 9998   # 세 번째 내장 카메라용 포트
 UDP_PORT4 = 9999   # 네 번째 카메라용 포트
 
@@ -42,7 +42,6 @@ class FrameReceiver:
 
                 # 헤더 파싱
                 frame_id, total_chunks, seq_num, data_len, bg_num, br_code = struct.unpack('=HBBHBB', segment[:8])
-                print(f"fram_id : {frame_id}")
                 data = segment[8:]
 
                 key = (addr, frame_id)
