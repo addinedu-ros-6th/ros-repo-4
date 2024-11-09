@@ -96,17 +96,6 @@ class FrameProcessor:
                 logger.error(f"Error getting frames from queue: {e}")
                 continue
 
-            # 최신 프레임을 유지하기 위해 큐를 비움
-            # while not self.front_frame_queue.empty():
-            #     try:
-            #         distorted_front_frame = self.front_frame_queue.get_nowait()
-            #     except queue.Empty:
-            #         break
-            # while not self.rear_frame_queue.empty():
-            #     try:
-            #         distorted_rear_frame = self.rear_frame_queue.get_nowait()
-            #     except queue.Empty:
-            #         break
             while not self.front_frame_queue.empty():
                 distorted_front_frame = self.front_frame_queue.get()
             while not self.rear_frame_queue.empty():
