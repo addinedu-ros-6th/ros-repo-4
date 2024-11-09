@@ -1,3 +1,4 @@
+
 import socket
 import threading
 import sys
@@ -6,7 +7,7 @@ import cv2
 import time
 import queue
 import logging
-import pickle  # 추가된 임포트
+import pickle
 from ultralytics import YOLO
 from body_follower import *
 from udp_connection import *
@@ -44,7 +45,7 @@ class FrameProcessor:
         self.send_data = {
             "operating_code": 0,
             "camera": 1,             # 1: front 2: rear
-            "following":{            # 오타 수정
+            "following":{
                 "sub_mode": 0,       # 0: stop & searching 1: too far 2: move to left 3: move to right 4: following 
                 "diff_x": 9999,
                 "diff_y": 9999,
@@ -76,15 +77,17 @@ class FrameProcessor:
                 camera_matrix = calibration_data["camera_matrix"]
                 dist_coeffs = calibration_data["dist_coeffs"]
         except Exception as e:
-            logger.error(f"Calibration file error: {e}")
-            return distorted_plot  # 오류 발생 시 원본 반환
-    
+            print("Calibration file error:", e)
+        
         # 왜곡 보정
         plot = cv2.undistort(distorted_plot, camera_matrix, dist_coeffs)
         return plot
 
+
     def process_frames(self):
         while self.running:
+
+
             try:
                 distorted_front_frame = self.front_frame_queue.get()
                 distorted_rear_frame = self.rear_frame_queue.get()
@@ -92,21 +95,8 @@ class FrameProcessor:
                 # 큐가 비어 있으면 다음 루프로
                 time.sleep(0.01)
                 continue
-            except Exception as e:
-                logger.error(f"Error getting frames from queue: {e}")
-                continue
-
+            
             # 최신 프레임을 유지하기 위해 큐를 비움
-            # while not self.front_frame_queue.empty():
-            #     try:
-            #         distorted_front_frame = self.front_frame_queue.get_nowait()
-            #     except queue.Empty:
-            #         break
-            # while not self.rear_frame_queue.empty():
-            #     try:
-            #         distorted_rear_frame = self.rear_frame_queue.get_nowait()
-            #     except queue.Empty:
-            #         break
             while not self.front_frame_queue.empty():
                 distorted_front_frame = self.front_frame_queue.get()
             while not self.rear_frame_queue.empty():
@@ -114,15 +104,13 @@ class FrameProcessor:
             
             front_plot = cv2.flip(distorted_front_frame, 1)
             rear_plot = cv2.flip(distorted_rear_frame, 1)
-
+                
             front_plot = self.undistortion(front_plot, FRONT_LANZ_CAL_PATH)
             rear_plot = self.undistortion(rear_plot, REAR_LANZ_CAL_PATH)
-
-
+            
             # operation_code 읽을 때 락 사용
             with self.operation_code_lock:
                 current_operation = self.operation_code
-
             if current_operation == 1:
                 # 전면 카메라 이미지 예측
                 front_results = self.model.predict(source=front_plot, classes=[0, 13, 15, 16, 28, 57], verbose=False)
@@ -135,32 +123,30 @@ class FrameProcessor:
                 self.reset_send_data()
                 self.send_data["operating_code"] = current_operation
                 self.send_data["camera"] = 1
-                self.send_data["following"]["sub_mode"] = sub_mode  
-                self.send_data["following"]["diff_x"] = diff_x     
-                self.send_data["following"]["diff_y"] = diff_y     
-                self.send_data["following"]["body_size"] = body_size 
+                self.send_data["following"]["sub_mode"] = sub_mode
+                self.send_data["following"]["diff_x"] = diff_x
+                self.send_data["following"]["diff_y"] = diff_y
+                self.send_data["following"]["body_size"] = body_size
+                
             else:
                 pass  # 다른 operation_code 처리
-
-            # 디스플레이 큐에 프레임 추가
+            # 디스플레이 큐에 넣기
             if self.front_display_queue.full():
-                self.front_display_queue.get_nowait()
-            self.front_display_queue.put(front_plot, block=False)
-            
+                self.front_display_queue.get()
+            self.front_display_queue.put(front_plot)
             if self.rear_display_queue.full():
-                self.rear_display_queue.get_nowait()
-            self.rear_display_queue.put(rear_plot, block=False)
-  
-            # 메시지 큐에 데이터 추가           
-            if self.send_msg_queue.full():
-                self.send_msg_queue.get_nowait()
-            self.send_msg_queue.put(self.send_data, block=False)
- 
+                self.rear_display_queue.get()
+            self.rear_display_queue.put(rear_plot)
+
+
+            self.send_msg_queue.put(self.send_data)
+            
+
     def reset_send_data(self):
         self.send_data = {
             "operating_code": 0,
             "camera": 1,             # 1: front 2: rear
-            "following":{            # 오타 수정
+            "following":{
                 "sub_mode": 0,        # 0: stop & searching 1: too far 2: move to left 3: move to right 4: following 
                 "diff_x": 9999,
                 "diff_y": 9999,
@@ -196,13 +182,13 @@ class FrameDisplayer:
 
     def display_frames(self):
         while self.running:
+ 
             if not self.front_display_queue.empty():
-                display_front_plot = self.front_display_queue.get_nowait()
+                display_front_plot = self.front_display_queue.get()
                 if display_front_plot is not None and display_front_plot.size > 0:
                     cv2.imshow("Front Camera", display_front_plot)
-
             if not self.rear_display_queue.empty():
-                display_rear_plot = self.rear_display_queue.get_nowait()
+                display_rear_plot = self.rear_display_queue.get()
                 if display_rear_plot is not None and display_rear_plot.size > 0:
                     cv2.imshow("Rear Camera", display_rear_plot)
 
@@ -223,7 +209,7 @@ class ClientHandler:
         self.client_address = client_address
         self.frame_processor = frame_processor
 
-        self.send_msg_queue = send_msg_queue  # 오타 수정
+        self.send_msg_queue = send_msg_queue
 
         self.running = True
 
@@ -258,6 +244,7 @@ class ClientHandler:
             logger.info(f"Connection with {self.client_address} closed.")
 
     def send_to_client(self):
+        """프레임 처리 결과를 주기적으로 클라이언트에 전송합니다."""
         while self.running: 
             if not self.send_msg_queue.empty():
                 data = self.send_msg_queue.get()
@@ -265,17 +252,16 @@ class ClientHandler:
                     # FrameProcessor에서 최신 데이터를 가져와서 전송
                     json_data = json.dumps(data)
                     self.client_socket.sendall(json_data.encode('utf-8'))
-                    time.sleep(0.03) 
+                    time.sleep(0.1)  
                 except Exception as e:
                     logger.error(f"Error sending data to {self.client_address}: {e}")
                     break
             else:
-                time.sleep(0.01)  # 큐가 비어 있을 경우 잠시 대기
+                time.sleep(0.1)
 
     def stop(self):
         self.running = False
         self.thread.join()
-        self.thread_send.join()  # 송신 스레드도 종료 대기
 
 class Server:
     def __init__(self, host, port, frame_processor, send_msg_queue):
