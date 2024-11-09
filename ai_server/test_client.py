@@ -3,7 +3,7 @@ import json
 import time
 
 # 서버 설정
-HOST = '127.0.0.1'  # 서버 IP 주소
+HOST = '192.168.0.45'  # 서버 IP 주소
 PORT = 8888         # 서버 포트 번호
 
 # JSON 데이터 생성
