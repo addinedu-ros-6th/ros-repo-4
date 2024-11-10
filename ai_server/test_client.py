@@ -40,7 +40,7 @@ def receive_data(client_socket):
                 # 수신한 데이터를 디코딩하고 JSON으로 변환
                 json_response = json.loads(response.decode('utf-8'))
                 print("Received from server:", json_response)
-                time.sleep(0.02)
+                time.sleep(0.05)
             except json.JSONDecodeError:
                 print("Received non-JSON data:", response.decode('utf-8'))
     except Exception as e:

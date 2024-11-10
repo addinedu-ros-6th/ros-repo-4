@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 HOST = '192.168.1.16'  # 서버 IP 주소
 PORT = 8888             # 사용할 포트 번호
 
-FRONT_LANZ_CAL_PATH = "lanz_calibration/calibration_minibot5.pkl"
+FRONT_LANZ_CAL_PATH = "lafnz_calibration/calibration_minibot5.pkl"
 REAR_LANZ_CAL_PATH  = "lanz_calibration/calibration_data120.pkl" 
 
 class FrameProcessor:
@@ -32,7 +32,7 @@ class FrameProcessor:
         self.rear_display_queue = rear_display_queue
         self.send_msg_queue = send_msg_queue
 
-        self.operation_code = 1
+        self.operation_code = 0
         self.operation_code_lock = threading.Lock()  # 스레드 안전을 위한 락
         self.body_follower = BodyFollower()
         self.running = True
