@@ -4,11 +4,10 @@ import struct
 import threading
 import time
 
-# 전면 후면 카메라 사용 코드
+# 전면 카메라만 사용하는 코드
 # 서버 IP 및 포트 설정
 MULTICAST_IP = '224.1.1.1'
-UDP_PORT1 = 9997  # 첫 번째 카메라용 포트
-UDP_PORT2 = 9996  # 두 번째 카메라용 포트
+UDP_PORT1 = 9996  # 카메라용 포트
 MAX_DGRAM = 1300  # 패킷 크기를 MTU 이하로 설정하여 단편화 방지
 
 # 로봇 번호 및 응답 코드 설정
@@ -82,12 +81,9 @@ def camera_thread(cap_index, udp_port):
 
 # 스레드 생성
 thread1 = threading.Thread(target=camera_thread, args=(0, UDP_PORT1))
-thread2 = threading.Thread(target=camera_thread, args=(2, UDP_PORT2))
 
 # 스레드 시작
 thread1.start()
-thread2.start()
 
 thread1.join()
-thread2.join()
 

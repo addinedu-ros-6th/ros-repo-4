@@ -17,19 +17,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # 서버 설정
-HOST = '192.168.1.16'  # 서버 IP 주소
+HOST = '192.168.213.196'  # 서버 IP 주소
 PORT = 8888             # 사용할 포트 번호
 
-FRONT_LANZ_CAL_PATH = "lafnz_calibration/calibration_minibot5.pkl"
-REAR_LANZ_CAL_PATH  = "lanz_calibration/calibration_data120.pkl" 
+UDP_PORT = 9996
+
+FRONT_LANZ_CAL_PATH = "lanz_calibration/calibration_minibot25.pkl"
 
 class FrameProcessor:
-    def __init__(self, front_frame_queue, rear_frame_queue, front_display_queue, rear_display_queue, send_msg_queue):
+    def __init__(self, front_frame_queue, front_display_queue, send_msg_queue):
         self.model = YOLO("yolov8s.pt")  # GPU 사용 설정
         self.front_frame_queue = front_frame_queue
-        self.rear_frame_queue = rear_frame_queue
         self.front_display_queue = front_display_queue
-        self.rear_display_queue = rear_display_queue
         self.send_msg_queue = send_msg_queue
 
         self.operation_code = 0
@@ -87,7 +86,6 @@ class FrameProcessor:
         while self.running:
             try:
                 distorted_front_frame = self.front_frame_queue.get()
-                distorted_rear_frame = self.rear_frame_queue.get()
             except queue.Empty:
                 # 큐가 비어 있으면 다음 루프로
                 time.sleep(0.01)
@@ -98,15 +96,9 @@ class FrameProcessor:
 
             while not self.front_frame_queue.empty():
                 distorted_front_frame = self.front_frame_queue.get()
-            while not self.rear_frame_queue.empty():
-                distorted_rear_frame = self.rear_frame_queue.get()
             
             front_plot = cv2.flip(distorted_front_frame, 1)
-            rear_plot = cv2.flip(distorted_rear_frame, 1)
-
             front_plot = self.undistortion(front_plot, FRONT_LANZ_CAL_PATH)
-            rear_plot = self.undistortion(rear_plot, REAR_LANZ_CAL_PATH)
-
 
             # operation_code 읽을 때 락 사용
             with self.operation_code_lock:
@@ -116,9 +108,7 @@ class FrameProcessor:
                 # 전면 카메라 이미지 예측
                 front_results = self.model.predict(source=front_plot, classes=[0, 13, 15, 16, 28, 57], verbose=False)
                 front_plot = front_results[0].plot()
-                # 후면 카메라 이미지 예측 (필요 시 추가)
-                rear_results = self.model.predict(source=rear_plot, classes=[0, 13, 15, 16, 28, 57], verbose=False)
-                rear_plot = rear_results[0].plot()
+
             elif current_operation == 3:  # Following mode
                 front_plot, sub_mode, diff_x, diff_y, body_size = self.body_follower.run(front_plot)
                 self.reset_send_data()
@@ -136,10 +126,6 @@ class FrameProcessor:
                 self.front_display_queue.get_nowait()
             self.front_display_queue.put(front_plot, block=False)
             
-            if self.rear_display_queue.full():
-                self.rear_display_queue.get_nowait()
-            self.rear_display_queue.put(rear_plot, block=False)
-  
             # 메시지 큐에 데이터 추가           
             if self.send_msg_queue.full():
                 self.send_msg_queue.get_nowait()
@@ -174,9 +160,8 @@ class FrameProcessor:
         self.thread.join()
 
 class FrameDisplayer:
-    def __init__(self, front_display_queue, rear_display_queue):
+    def __init__(self, front_display_queue):
         self.front_display_queue = front_display_queue
-        self.rear_display_queue = rear_display_queue
         self.running = True
 
         # 스레드 시작
@@ -189,11 +174,6 @@ class FrameDisplayer:
                 display_front_plot = self.front_display_queue.get_nowait()
                 if display_front_plot is not None and display_front_plot.size > 0:
                     cv2.imshow("Front Camera", display_front_plot)
-
-            if not self.rear_display_queue.empty():
-                display_rear_plot = self.rear_display_queue.get_nowait()
-                if display_rear_plot is not None and display_rear_plot.size > 0:
-                    cv2.imshow("Rear Camera", display_rear_plot)
 
             # GUI 이벤트 처리
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -304,23 +284,17 @@ class Server:
 def main():
     # 큐 초기화
     front_frame_queue = queue.Queue(maxsize=10)
-    rear_frame_queue = queue.Queue(maxsize=10)
     front_display_queue = queue.Queue(maxsize=10)
-    rear_display_queue = queue.Queue(maxsize=10)
     send_msg_queue = queue.Queue(maxsize=10)
 
     # FrameReceiver 시작
-    front_receiver = FrameReceiver(UDP_PORT2, front_frame_queue)
+    front_receiver = FrameReceiver(UDP_PORT, front_frame_queue)
     front_receiver_thread = threading.Thread(target=front_receiver.start_receiving, daemon=True)
     front_receiver_thread.start()
 
-    rear_receiver = FrameReceiver(UDP_PORT1, rear_frame_queue)
-    rear_receiver_thread = threading.Thread(target=rear_receiver.start_receiving, daemon=True)
-    rear_receiver_thread.start()
-
     # FrameProcessor 및 FrameDisplayer 인스턴스 생성
-    frame_processor = FrameProcessor(front_frame_queue, rear_frame_queue, front_display_queue, rear_display_queue, send_msg_queue)
-    frame_displayer = FrameDisplayer(front_display_queue, rear_display_queue)
+    frame_processor = FrameProcessor(front_frame_queue, front_display_queue, send_msg_queue)
+    frame_displayer = FrameDisplayer(front_display_queue)
 
     # 서버 인스턴스 생성
     server = Server(HOST, PORT, frame_processor, send_msg_queue)
