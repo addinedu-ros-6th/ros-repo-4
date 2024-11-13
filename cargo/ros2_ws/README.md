@@ -2,15 +2,21 @@
 ```
 sudo apt update
 sudo apt upgrade
+sudo apt install python3-rpi.gpio
+sudo pip3 install spidev
+
 ```
 
 ### 미니 봇에서 실행할 때 설정
-spidev 설치
 ```
+sudo groupadd gpio
+sudo usermod -aG gpio $USER
+sudo chown root:$(whoami) /dev/gpiomem
 sudo chmod 660 /dev/gpiomem
-sudo chown root:gpio /dev/gpiomem #라즈베리파이 GPIO설정
+
+sudo chown root:gpio /dev/gpiomem 
 sudo usermod -aG spi $(whoami)
-sudo chmod 666 /dev/spidev0.0       #센서 관련 설정
+sudo chmod 666 /dev/spidev0.0      
 ```
 ### 퍼블리셔 실행
 ```
