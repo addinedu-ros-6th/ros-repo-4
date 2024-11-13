@@ -10,6 +10,30 @@
         /* 전체 배경색 설정 */
         body {
             background-color: lightblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .content-container {
+            text-align: center;
+            width: 100%;
+            max-width: 800px; /* 최대 너비 설정 */
+        }
+
+        video, canvas {
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+            width: 100%; /* 화면 너비에 맞추어 크기 조정 */
+            max-width: 640px; /* 최대 너비 설정 */
+            height: auto;
+        }
+
+        #capturedImage {
+            margin-top: 20px;
         }
 
         /* 상단 아이콘 위치 조정 및 크기 확대 */
@@ -67,31 +91,138 @@
             border-radius: 8px;
             border: 2px solid #228B22;
         }
+        /* 버튼 스타일 설정 */
+        .btn-custom {
+            color: white;              /* 버튼 텍스트 색상 */
+            background-color: #0056b3; /* 기본 버튼 색상 (Bootstrap 기본 색) */
+            padding: 15px 15px;        /* 버튼 크기 조정 */
+            font-size: 1.5rem;         /* 버튼 텍스트 크기 */
+            border-radius: 8px;        /* 버튼 모서리 둥글게 */
+            margin-top: 10px;
+            width: 100%;               /* 버튼 너비 화면 크기 기준 */
+            max-width: 356px;          /* 최대 너비 설정 */
+        }
+
+        /* 버튼 호버 효과 */
+        .btn-custom:hover {
+            background-color: #004494; /* 호버 시 버튼 색상 */
+        }
+
     </style>
 </head>
 <body>
-    <!-- 좌측 상단 Home 아이콘 -->
-    <a href="/home" class="top-left-icon">
-        <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
-    </a>
-    <!-- 우측 상단 뒤로 가기 아이콘 -->
-    <a href="javascript:history.back()" class="top-right-icon">
-        <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
-    </a>
-    <br><br>
-    <div class="container text-center mt-5">
-        <h1>Registration</h1>
-        <p>Please show your face to backward camera.</p>
-        <p>The cargo will open when I checked user's Identification.</p>
+    <!-- 전체 콘텐츠를 수직 중앙에 정렬하기 위한 컨테이너 -->
+    <div class="content-container">
+        <!-- 좌측 상단 Home 아이콘 -->
+        <a href="/home" class="top-left-icon">
+            <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
+        </a>
+        <!-- 우측 상단 뒤로 가기 아이콘 -->
+        <a href="javascript:history.back()" class="top-right-icon">
+            <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
+        </a>
 
-        <br><br>
+        <div class="container text-center mt-5">
+            <h1>Registration</h1>
+            <p>Please show your face</p>
 
-        <img src="images/face_recognition.png" alt="Porter Goose Image" class="main-image">
-        
+            <!-- 수평 박스 컨테이너 -->
+            <div class="horizontal-boxes">
+                <div class="box-1">
+                    Step 1 <br> Face Recognition
+                </div>
+                <div class="box-2">
+                    Step 2 <br> Ticket Scan
+                </div>
+            </div>
+            <div class="horizontal-boxes">
+                <div class="box-2">
+                    Step 3 <br> Luggage Loading 
+                </div>
+                <div class="box-2">
+                    Step 4 <br> Select Mode
+                </div>
+            </div>
+        </div>
+
+        <!-- 비디오 및 캡처 버튼 -->
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <button id="captureButton" class="btn-custom">Capture Photo</button>
+        <button id="uploadButton" class="btn-custom" style="display: none;">Upload Image</button>
     </div>
-
     
     <!-- 오프라인 Bootstrap JS 연결 -->
     <script src="js/bootstrap.bundle.min.js"></script>
+
+    <!-- 카메라 및 캡처 기능 스크립트 -->
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('captureButton');
+        const uploadButton = document.getElementById('uploadButton');
+
+        // 카메라 스트림을 비디오에 연결
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing the camera: ", error);
+                alert("Cannot access camera. Please check permissions.");
+            }
+        }
+
+        // 캡처 버튼 클릭 시 비디오 프레임을 캔버스로 복사하고 이미지 표시 및 버튼 전환
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            video.style.display = 'none'; // 비디오 숨기기
+            canvas.style.display = 'block'; // 캡처한 이미지 표시
+
+            captureButton.style.display = 'none'; // Capture 버튼 숨기기
+            uploadButton.style.display = 'block'; // Upload 버튼 표시
+        });
+
+        // Upload 버튼 클릭 시 이미지를 서버로 전송
+        uploadButton.addEventListener('click', async () => {
+            const imageDataUrl = canvas.toDataURL('image/png'); // 캔버스의 이미지를 데이터 URL로 변환
+            const response = await fetch('/upload_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image_data: imageDataUrl }),
+            });
+            if (response.ok) {
+                alert("Image uploaded successfully!");
+            } else {
+                alert("Failed to upload image.");
+            }
+        });
+
+        // 페이지 로드 시 카메라 시작
+        window.addEventListener('load', startCamera);
+
+        // Upload 버튼 클릭 시 이미지를 서버로 전송
+        uploadButton.addEventListener('click', async () => {
+            const imageDataUrl = canvas.toDataURL('image/png'); // 캔버스의 이미지를 데이터 URL로 변환
+            const response = await fetch('/upload_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image_data: imageDataUrl }),
+            });
+            if (response.ok) {
+                alert("Image uploaded successfully!");
+                window.location.href = '/ticket_scan'; // 업로드 후 이동할 URL로 설정
+            } else {
+                alert("Failed to upload image.");
+            }
+        });
+    </script>
 </body>
 </html>

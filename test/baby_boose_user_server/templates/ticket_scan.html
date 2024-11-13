@@ -10,6 +10,26 @@
         /* 전체 배경색 설정 */
         body {
             background-color: lightblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .content-container {
+            text-align: center;
+            width: 100%;
+            max-width: 800px; /* 최대 너비 설정 */
+        }
+
+        video, #processedImage {
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+            width: 100%; /* 화면 너비에 맞추어 크기 조정 */
+            max-width: 640px; /* 최대 너비 설정 */
+            height: auto;
         }
 
         /* 상단 아이콘 위치 조정 및 크기 확대 */
@@ -29,29 +49,6 @@
             right: 10px;
             font-size: 2rem; /* 뒤로 가기 버튼 크기 */
             color:#0056b3;
-        }
-        
-        /* 화면 중앙에 버튼 위치 */
-        .centered-button {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200vh;
-        }
-
-        /* 버튼 스타일 설정 */
-        .btn-custom {
-            color: white;              /* 버튼 텍스트 색상 */
-            background-color: #0056b3; /* 기본 버튼 색상 (Bootstrap 기본 색) */
-            padding: 15px 15px;          /* 버튼 크기 조정 (위아래 20px, 좌우 40px) */
-            font-size: 1.5rem;           /* 버튼 텍스트 크기 */
-            border-radius: 8px;          /* 버튼 모서리 둥글게 */
-            margin-top: 5px;
-        }
-
-        /* 버튼 호버 효과 */
-        .btn-custom:hover {
-            background-color: #0056b3; /* 호버 시 버튼 색상 */
         }
 
         /* 이미지와 버튼 사이 간격 */
@@ -90,51 +87,114 @@
             border-radius: 8px;
             border: 2px solid #228B22;
         }
+        /* 버튼 스타일 설정 */
+        .btn-custom {
+            color: white;              /* 버튼 텍스트 색상 */
+            background-color: #0056b3; /* 기본 버튼 색상 (Bootstrap 기본 색) */
+            padding: 15px 15px;        /* 버튼 크기 조정 */
+            font-size: 1.5rem;         /* 버튼 텍스트 크기 */
+            border-radius: 8px;        /* 버튼 모서리 둥글게 */
+            margin-top: 10px;
+            width: 100%;               /* 버튼 너비 화면 크기 기준 */
+            max-width: 356px;          /* 최대 너비 설정 */
+        }
+
+        /* 버튼 호버 효과 */
+        .btn-custom:hover {
+            background-color: #004494; /* 호버 시 버튼 색상 */
+        }
+
     </style>
 </head>
 <body>
-    <!-- 좌측 상단 Home 아이콘 -->
-    <a href="/home" class="top-left-icon">
-        <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
-    </a>
-    <!-- 우측 상단 뒤로 가기 아이콘 -->
-    <a href="javascript:history.back()" class="top-right-icon">
-        <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
-    </a>
-    <br><br>
-    <div class="container text-center mt-5">
-        <h1>Registration</h1>
-        <p>Please show your ticket to backward camera.</p>
-        <!-- 수평 박스 컨테이너 -->
-        <div class="horizontal-boxes">
-            <!-- 첫 번째 박스 -->
-            <div class="box-2">
-                Step 1 <br> Face Recognition
-            </div>
+    <!-- 전체 콘텐츠를 수직 중앙에 정렬하기 위한 컨테이너 -->
+    <div class="content-container">
+        <!-- 좌측 상단 Home 아이콘 -->
+        <a href="/home" class="top-left-icon">
+            <i class="bi bi-house-fill"></i> <!-- Home 아이콘 -->
+        </a>
+        <!-- 우측 상단 뒤로 가기 아이콘 -->
+        <a href="javascript:history.back()" class="top-right-icon">
+            <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
+        </a>
 
-            <!-- 두 번째 박스 -->
-            <div class="box-1">
-                Step 2 <br> Ticket Scan
+        <div class="container text-center mt-5">
+            <h1>Registration</h1>
+            <p>Please show your ticket.</p>
+
+            <!-- 수평 박스 컨테이너 -->
+            <div class="horizontal-boxes">
+                <div class="box-2">
+                    Step 1 <br> Face Recognition
+                </div>
+                <div class="box-1">
+                    Step 2 <br> Ticket Scan
+                </div>
+            </div>
+            <div class="horizontal-boxes">
+                <div class="box-2">
+                    Step 3 <br> Luggage Loading 
+                </div>
+                <div class="box-2">
+                    Step 4 <br> Select Mode
+                </div>
             </div>
         </div>
-        <div class="horizontal-boxes">
-            <!-- 세 번째 박스 -->
-            <div class="box-2">
-                Step 3 <br> Luggage Loading 
-            </div>
 
-            <!-- 네 번째 박스 -->
-            <div class="box-2">
-                Step 4 <br> Select Mode
-            </div>
-        </div>
-        <br><br>
-
-        <img src="images/ticket_scan.png" alt="Porter Goose Image" class="main-image">
+        <!-- 비디오 및 캡처된 이미지 표시를 위한 영역 -->
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <img id="processedImage" alt="Processed Frame" style="display: none;"/> <!-- 서버로부터 수신된 이미지를 표시 -->
     </div>
-
     
     <!-- 오프라인 Bootstrap JS 연결 -->
     <script src="js/bootstrap.bundle.min.js"></script>
+
+    <!-- 카메라 및 캡처 기능 스크립트 -->
+    <script>
+        const video = document.getElementById('video');
+        const processedImage = document.getElementById('processedImage'); // 서버에서 처리된 이미지를 표시할 <img> 태그
+        const ws = new WebSocket("ws://localhost:8000/ws/ticket_scan");
+
+        // 카메라 시작 함수
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                // 주기적으로 캔버스에 그려진 프레임을 서버에 전송
+                setInterval(() => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // 캔버스 이미지를 Base64로 인코딩하여 전송
+                    const frame = canvas.toDataURL('image/jpeg');
+                    const message = JSON.stringify({
+                        'type': 'frame',
+                        'data': frame.split(',')[1] // "data:image/jpeg;base64," 부분 제거
+                    });
+                    ws.send(message);
+                }, 100); // 100ms 간격으로 프레임 전송 (조정 가능)
+
+                // 서버에서 처리된 이미지를 수신하고 업데이트
+                ws.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    if (message.type === 'navigate') {
+                        window.location.href = message.data; // 자동으로 /next 페이지로 이동
+                    }
+                };
+
+            } catch (error) {
+                console.error("Error accessing the camera: ", error);
+                alert("Cannot access camera. Please check permissions.");
+            }
+        }
+
+        window.addEventListener('load', startCamera);
+    </script>    
 </body>
 </html>
