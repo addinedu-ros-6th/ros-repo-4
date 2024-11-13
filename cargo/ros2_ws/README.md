@@ -2,7 +2,7 @@
 ```
 sudo apt update
 sudo apt upgrade
-
+```
 
 ### 미니 봇에서 실행할 때 설정
 spidev 설치
