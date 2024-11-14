@@ -10,13 +10,13 @@ from geometry_msgs.msg import Twist, TwistStamped
 
 from googeese_control_pkg.tcp_connection import TCPConnect
 
-AI_HOST = '192.168.1.16'
+AI_HOST = '192.168.0.31'
 AI_PORT = 8888
 AI_TIME_INTERVAL = 0.05
 DRIVING_CALLBACK_TIME_INTERVAL = 0.05
 
 INITIAL_BODY_SIZE = 4000    # 해당 크기일 때 속도가 0이 되어야
-MIN_BODY_SIZE = 1500        # 해당 크기일 때 속도가 최대 
+MIN_BODY_SIZE = 3000        # 해당 크기일 때 속도가 최대 
 FOLLOW_SIZE_FACTOR_RATIO = INITIAL_BODY_SIZE - MIN_BODY_SIZE
 FOLLOW_TURN_FACTOR_RATIO = 180
 
@@ -96,6 +96,8 @@ class CmdControlNode(Node):
 
         if self.state == 'Idle' and command == 'Follow':
             self.transition_to('Follow')
+        elif self.state == 'Idle' and command == 'auto_delivery':
+            self.transition_to('auto_delivery')
         elif command == 'stop':
             pass
         elif command == 'error':
@@ -115,6 +117,13 @@ class CmdControlNode(Node):
 
         # 상태에 따라 타이머 활성화/비활성화
         if new_state == 'Follow':
+            if self.driving_timer is None:
+                self.driving_timer = self.create_timer(
+                    DRIVING_CALLBACK_TIME_INTERVAL,
+                    self.driving_callback,
+                    callback_group=self.driving_group    
+                )
+        elif new_state == 'auto_delivery':
             if self.driving_timer is None:
                 self.driving_timer = self.create_timer(
                     DRIVING_CALLBACK_TIME_INTERVAL,
@@ -165,18 +174,31 @@ class CmdControlNode(Node):
         updated_cmd_vel.angular = cmd_vel_out.twist.angular
 
         if self.following_sub_mode == 4:
-            velocity = (self.following_body_size - MIN_BODY_SIZE) / FOLLOW_SIZE_FACTOR_RATIO
-            if velocity < MIN_VELOCITY:
-                velocity = MIN_VELOCITY
-            elif velocity > MAX_VELOCITY:
-                velocity = MAX_VELOCITY
+            # velocity = (self.following_body_size - MIN_BODY_SIZE) / FOLLOW_SIZE_FACTOR_RATIO
+            # if velocity < MIN_VELOCITY:
+                # velocity = MIN_VELOCITY
+            # elif velocity > MAX_VELOCITY:
+                # velocity = MAX_VELOCITY
 
-            angular = -self.following_diff_x / FOLLOW_TURN_FACTOR_RATIO
-            if angular < MIN_ANGULAR:
-                angular = MIN_ANGULAR
-            elif angular > MAX_ANGULAR:
-                angular = MAX_ANGULAR
+            # angular = -self.following_diff_x / FOLLOW_TURN_FACTOR_RATIO
+            # if angular < MIN_ANGULAR:
+                # angular = MIN_ANGULAR
+            # elif angular > MAX_ANGULAR:
+                # angular = MAX_ANGULAR
+            velocity = 0 
+            angular = 0
 
+            if self.following_body_size < INITIAL_BODY_SIZE:
+                velocity = INITIAL_BODY_SIZE/self.following_body_size * 0.15
+            else :
+                velocity = 0.0
+
+            if self.following_diff_x > 130:
+                angular = -(self.following_diff_x*0.5/250)
+            elif self.following_diff_x < -130:
+                angular = -(self.following_diff_x*0.5/250)
+            else :
+                angular = 0.0
             updated_cmd_vel.linear.x = velocity
             updated_cmd_vel.angular.z = angular
         else: 
@@ -194,9 +216,14 @@ class CmdControlNode(Node):
         # AI 서버로부터 딥러닝 결과 수신
         if not self.recv_ai_q.empty():
             data = self.recv_ai_q.get()
-            self.following_sub_mode = data["following"]["sub_mode"]
-            self.following_diff_x = data["following"]["diff_x"] 
-            self.following_body_size = data["following"]["body_size"]
+            if self. state == 'auto_dilivery':
+                self.auto_dilivery_mode_detected = data["obstacle"]["detected"]
+
+            elif self.state == 'Follow':
+                self.following_sub_mode = data["following"]["sub_mode"]
+                self.following_diff_x = data["following"]["diff_x"] 
+                self.following_body_size = data["following"]["body_size"]
+            
     
     def destroy_node(self):
         if self.driving_timer is not None:
