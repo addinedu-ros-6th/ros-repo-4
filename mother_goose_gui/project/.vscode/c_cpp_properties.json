@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/jook/minibot_ws/install/vector_pursuit_controller/include/**",
+        "/home/jook/minibot_ws/install/minibot_navigation2/include/**",
+        "/home/jook/minibot_ws/install/minibot_controllers/include/**",
+        "/home/jook/minibot_ws/install/minibot_interfaces/include/**",
+        "/home/jook/minibot_ws/install/minibot_hardware_interface/include/**",
+        "/home/jook/minibot_ws/install/goose_control_msg_pkg/include/**",
+        "/home/jook/minibot_ws/install/ai_msgs_pkg/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/jook/dev_ws/ROS2_project/src/ai_msgs_pkg/include/**",
+        "/home/jook/dev_ws/ROS2_project/src/goose_control_msg_pkg/include/**",
+        "/home/jook/dev_ws/ROS2_project/src/pinklab_minibot_robot/minibot_controllers/include/**",
+        "/home/jook/dev_ws/ROS2_project/src/pinklab_minibot_robot/minibot_hardware_interface/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

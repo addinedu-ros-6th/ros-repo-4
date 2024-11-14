@@ -18,7 +18,7 @@ GON_ADDIN_5G = '192.168.0.45'
 GON_HOME = '192.168.1.16'
 MULTICAST_IP = '224.1.1.1'
 
-model = YOLO("yolov8s.pt")
+model = YOLO("model/yolov8n-person.pt")
 
 class FrameReceiver:
     def __init__(self, udp_port):

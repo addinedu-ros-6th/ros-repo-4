@@ -3,7 +3,7 @@ import socket
 import struct
 import time
 
-GON_ADDIN_5G = '192.168.0.45'
+GON_ADDIN_5G = '192.168.0.42'
 GON_HOME = '192.168.1.16'
 
 SERVER_HOST =  GON_HOME # 서버 IP 주소
