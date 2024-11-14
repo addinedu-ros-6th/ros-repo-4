@@ -15,7 +15,7 @@ from utils.helpers import get_user_id, get_user_id_from_scope
 from tcp_server import TCPServer
 
 # Initialize TCP Server
-GOOGEESE_GUI_HOST = '172.25.70.196' 
+GOOGEESE_GUI_HOST = '192.168.0.45' 
 GOOGEESE_GUI_PORT = 8889
 
 

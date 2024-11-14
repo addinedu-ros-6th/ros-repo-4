@@ -4,13 +4,13 @@ import json
 import time
 
 # 서버 설정
-HOST = '172.25.70.196'  # 서버 IP 주소
+HOST = '192.168.0.45'  # 서버 IP 주소
 PORT = 8889             # 서버 포트 번호
 
 TIME_INTERVAL = 0.5
 
 # JSON 데이터 생성
-data = {"robot_id": 1, "state": "cargo open empty"}
+data = {"robot_id": 5, "state": "cargo open full"}
 
 def send_data(client_socket, data):
     """서버에 데이터를 지속적으로 전송하는 함수"""
@@ -19,7 +19,7 @@ def send_data(client_socket, data):
             # JSON 데이터를 문자열로 변환 및 인코딩 후 전송
             json_data = json.dumps(data)
             client_socket.sendall(json_data.encode('utf-8'))
-            print("Data sent to server:", json_data)
+            # print("Data sent to server:", json_data)
             
             # 0.05초 대기
             time.sleep(TIME_INTERVAL)

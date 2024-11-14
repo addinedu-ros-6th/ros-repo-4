@@ -1,6 +1,8 @@
 # routers/pages.py
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, HTTPException
+from fastapi import status
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from state.shared_state import session_data, send_msg_q, TEMP_ROBOT_ID
 from utils.helpers import get_user_id
@@ -73,7 +75,7 @@ async def read_confirmation(request: Request):
 @router.get("/cargo_open", response_class=HTMLResponse)
 async def read_cargo_open(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo open"})
 
     context = {"request": request}
     return templates.TemplateResponse("cargo.html", context)
@@ -186,3 +188,33 @@ async def read_returning(request: Request):
 
     context = {"request": request}
     return templates.TemplateResponse("return.html", context)
+
+
+@router.post("/enqueue_action", response_class=JSONResponse)
+async def enqueue_action(request: Request):
+    try:
+        user_id = get_user_id(request)
+        robot_id = session_data[user_id]["robot_id"]
+        
+        # Parse the incoming JSON data
+        data = await request.json()
+        action = data.get("action")
+        
+        if not action:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Action not provided")
+        
+        # Map actions to states if necessary
+        action_to_state = {
+            "cargo close": "cargo close",
+        }
+        
+        state = action_to_state.get(action, action)  # Default to action if no mapping exists
+        
+        # Enqueue the message
+        send_msg_q.put({"robot_id": robot_id, "state": state})
+        
+        return JSONResponse(content={"status": "success", "message": f"Action '{action}' enqueued."})
+    
+    except Exception as e:
+        print(f"Error in enqueue_action: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")

@@ -1,7 +1,7 @@
 import cv2
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import json, cv2, numpy as np, base64, asyncio
-from state.shared_state import session_data, recv_msg_q
+from state.shared_state import session_data, recv_msg_q, send_msg_q
 from utils.helpers import get_user_id_from_scope
 
 router = APIRouter()
@@ -56,6 +56,7 @@ async def websocket_cargo_open(websocket: WebSocket):
     try:
         while True:
             # Asynchronously get message from recv_msg_q
+            print("dfsdf")
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, recv_msg_q.get)
             print(data)
@@ -63,17 +64,21 @@ async def websocket_cargo_open(websocket: WebSocket):
             print(robot_id)
             display_message = "Not yet"
             if data["robot_id"] == robot_id:
-                print("111111")
                 state = data.get("state", "").split(" ")
                 if len(state) >= 3 and state[0] == "cargo":
-                    if state[1] == "closed" and state[2] == "empty":
+                    if state[1] == "close" and state[2] == "empty":
                         display_message = "Waiting for the Gate open" 
                     elif state[1] == "open" and state[2] == "empty":
                         display_message = "Please put your luggage"
                     elif state[1] == "open" and state[2] == "full":
                         display_message = "Loaded!!"
-                    elif state[1] == "closed" and state[2] == "full":
+                    elif state[1] == "close" and state[2] == "full":
                         display_message = "done"
+                        
+                        await websocket.send_text(json.dumps({
+                            "type": "navigate",
+                            "url": "/select_mode"
+                        }))
                     else:
                         display_message = "Ready..."
             

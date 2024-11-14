@@ -140,7 +140,7 @@
         <br>
         <img src="images/cargo_open.webp" alt="Porter Goose Image" class="main-image">
         <br><br>
-        <a href="/select_mode" class="btn btn-custom">It's Done!</a>
+        <button class="btn btn-custom" onclick="enqueueAction(); window.location.href='/select_mode';">Close Cargo Door</button>
     </div> 
 
     
@@ -164,7 +164,7 @@
             } else if (message.type === "update_image") {
                 document.getElementById("face-photo").src = `/images/faces/${message.image_name}`;
             } else if (message.type === "navigate") {
-                window.location.href = message.data;
+                window.location.href = message.url;
             }
 
             // 추가적인 메시지 처리 로직을 여기에 작성
@@ -178,6 +178,31 @@
         ws.onerror = function(event) {
             console.error("WebSocket 오류:", event);
         };
+
+        // New JavaScript Function to Enqueue Action
+        async function enqueueAction() {
+            try {
+                const response = await fetch('/enqueue_action', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'cargo close' }) // You can pass additional data if needed
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Action enqueued successfully:', result);
+                    document.getElementById("message").innerText;
+
+                    // Optionally, update the UI or navigate based on the response
+                } else {
+                    console.error('Failed to enqueue action:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error enqueuing action:', error);
+            }
+        }
     </script>
 </body>
 </html>
