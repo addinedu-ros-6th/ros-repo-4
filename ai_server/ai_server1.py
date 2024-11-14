@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # 서버 설정
-HOST = '172.25.70.196'  # 서버 IP 주소
+HOST = '192.168.0.45'  # 서버 IP 주소
 PORT = 8888             # 사용할 포트 번호
 
 UDP_PORT = 9996
