@@ -10,10 +10,11 @@ sudo pip3 install spidev
 ### 미니 봇에서 실행할 때 설정
 ```
 sudo groupadd gpio
+sudo groupadd spi
 sudo usermod -aG gpio $USER
 sudo chown root:$(whoami) /dev/gpiomem
 sudo chmod 660 /dev/gpiomem
-sudo groupadd spi
+
 
 
 sudo chown root:gpio /dev/gpiomem 
