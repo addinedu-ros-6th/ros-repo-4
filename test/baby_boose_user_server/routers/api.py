@@ -16,7 +16,7 @@ async def upload_image(request: Request, data: ImageData):
     image_bytes = base64.b64decode(image_data)
 
     # Define file path
-    file_path = os.path.join("static", "images", "faces", f"{user_id}.png")
+    file_path = os.path.join("images", "faces", f"{user_id}.png")
 
     # Save image
     os.makedirs(os.path.dirname(file_path), exist_ok=True)

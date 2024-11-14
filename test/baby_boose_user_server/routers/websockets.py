@@ -58,9 +58,12 @@ async def websocket_cargo_open(websocket: WebSocket):
             # Asynchronously get message from recv_msg_q
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, recv_msg_q.get)
-
+            print(data)
+            print(data["robot_id"])
+            print(robot_id)
             display_message = "Not yet"
-            if data.get("robot_id") == robot_id:
+            if data["robot_id"] == robot_id:
+                print("111111")
                 state = data.get("state", "").split(" ")
                 if len(state) >= 3 and state[0] == "cargo":
                     if state[1] == "closed" and state[2] == "empty":

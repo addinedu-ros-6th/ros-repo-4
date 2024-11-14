@@ -10,7 +10,7 @@ from geometry_msgs.msg import Twist, TwistStamped
 
 from googeese_control_pkg.tcp_connection import TCPConnect
 
-AI_HOST = '192.168.0.31'
+AI_HOST = '172.25.70.196'
 AI_PORT = 8888
 AI_TIME_INTERVAL = 0.05
 DRIVING_CALLBACK_TIME_INTERVAL = 0.05
@@ -35,7 +35,7 @@ class CmdControlNode(Node):
         super().__init__('googeese_control_pkg')
 
         # 초기 상태 (우선은 tracking 인식 대기 상태)
-        self.state = 'Idle' # 현재는 Idle -> Follow
+        self.state = 'idle' # 현재는 idle -> follow
         self.get_logger().info(f'Initial State: {self.state}')
         
         # 콜백 그룹 설정
@@ -74,7 +74,7 @@ class CmdControlNode(Node):
 
         self.command_sub = self.create_subscription(
             String,
-            'command',
+            'Request',
             self.command_callback,
             10
         )
@@ -94,9 +94,9 @@ class CmdControlNode(Node):
         command = msg.data
         self.get_logger().info(f'Received command: {command}')
 
-        if self.state == 'Idle' and command == 'Follow':
-            self.transition_to('Follow')
-        elif self.state == 'Idle' and command == 'auto_delivery':
+        if self.state == 'idle' and command == 'follow':
+            self.transition_to('follow')
+        elif self.state == 'idle' and command == 'auto_delivery':
             self.transition_to('auto_delivery')
         elif command == 'stop':
             pass
@@ -116,7 +116,7 @@ class CmdControlNode(Node):
         self.state = new_state
 
         # 상태에 따라 타이머 활성화/비활성화
-        if new_state == 'Follow':
+        if new_state == 'follow':
             if self.driving_timer is None:
                 self.driving_timer = self.create_timer(
                     DRIVING_CALLBACK_TIME_INTERVAL,
@@ -141,17 +141,17 @@ class CmdControlNode(Node):
 
     def cmd_vel_callback(self, msg):
         """cmd_vel_out 토픽에서 TwistStemped 메시지를 수신했을 때 호출되는 콜백 함수"""
-        self.get_logger().info(
-            f'Received cmd_vel_out: linear.x={msg.twist.linear.x}, angular.z={msg.twist.angular.z}'
-        )
+        # self.get_logger().info(
+        #     f'Received cmd_vel_out: linear.x={msg.twist.linear.x}, angular.z={msg.twist.angular.z}'
+        # )
 
-        if self.state == "Follow":
+        if self.state == "follow":
             # 딥러닝 결과를 반영하여 cmd_vel update
             updated_cmd_vel = self.update_cmd_vel(msg)
             self.cmd_vel_pub.publish(updated_cmd_vel)
-            self.get_logger().info(
-                f'Published updated cmd_vel: linear.x={updated_cmd_vel.linear.x}, angular.z={updated_cmd_vel.angular.z}'
-            )
+            # self.get_logger().info(
+            #     f'Published updated cmd_vel: linear.x={updated_cmd_vel.linear.x}, angular.z={updated_cmd_vel.angular.z}'
+            # )
         else:
             # 비주행 상태에서는 모든 속도를 0으로 설정한 Twist 메시지 발행
             zero_cmd_vel = Twist()
@@ -219,7 +219,7 @@ class CmdControlNode(Node):
             if self. state == 'auto_dilivery':
                 self.auto_dilivery_mode_detected = data["obstacle"]["detected"]
 
-            elif self.state == 'Follow':
+            elif self.state == 'follow':
                 self.following_sub_mode = data["following"]["sub_mode"]
                 self.following_diff_x = data["following"]["diff_x"] 
                 self.following_body_size = data["following"]["body_size"]

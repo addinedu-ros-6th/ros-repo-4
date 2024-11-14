@@ -10,7 +10,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # 시작 화면 start.html
-# uvicorn main:app --host 192.168.0.45 --port 8000 --reload
+# uvicorn main:app --reload
 # http://127.0.0.1:8000/?robot_id=5 으로 접속
 @router.get("/", response_class=HTMLResponse)
 async def read_start(request: Request, robot_id: int):
@@ -41,7 +41,7 @@ async def read_face_recognition(request: Request):
     user_id = get_user_id(request)
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "face_identification"})
    
-    context = {"request": request, "name": "Goose AI Porter"}
+    context = {"request": request, "file_name": user_id}
     return templates.TemplateResponse("face_identification.html", context)
 
 @router.get("/ticket_scan", response_class=HTMLResponse)
@@ -160,7 +160,7 @@ async def read_face_identification(request: Request):
 @router.get("/cargo_open_final", response_class=HTMLResponse)
 async def read_cargo_open_final(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo open"})
 
     context = {"request": request}
     return templates.TemplateResponse("cargo.html", context)

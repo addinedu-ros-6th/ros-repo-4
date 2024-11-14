@@ -14,6 +14,11 @@ from utils.helpers import get_user_id, get_user_id_from_scope
 
 from tcp_server import TCPServer
 
+# Initialize TCP Server
+GOOGEESE_GUI_HOST = '172.25.70.196' 
+GOOGEESE_GUI_PORT = 8889
+
+
 # Initialize FastAPI app
 app = FastAPI()
 
@@ -21,10 +26,6 @@ app = FastAPI()
 app.mount("/css", StaticFiles(directory="css"), name="css")
 app.mount("/js", StaticFiles(directory="js"), name="js")
 app.mount("/images", StaticFiles(directory="images"), name="images")
-
-# Initialize TCP Server
-GOOGEESE_GUI_HOST = '192.168.0.41' 
-GOOGEESE_GUI_PORT = 8889
 
 try:
     tcp_server = TCPServer(GOOGEESE_GUI_HOST, GOOGEESE_GUI_PORT, send_msg_q, recv_msg_q)

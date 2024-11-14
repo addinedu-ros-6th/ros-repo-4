@@ -4,7 +4,7 @@ import json
 import time
 
 # 서버 설정
-HOST = '192.168.0.41'  # 서버 IP 주소
+HOST = '172.25.70.196'  # 서버 IP 주소
 PORT = 8889             # 서버 포트 번호
 
 TIME_INTERVAL = 0.5
