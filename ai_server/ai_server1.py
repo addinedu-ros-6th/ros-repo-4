@@ -8,7 +8,7 @@ import queue
 import logging
 import pickle  # 추가된 임포트
 from ultralytics import YOLO
-from body_follower import *
+from ai_server.follow_and_pause import *
 from udp_connection import *
 from aruco_identification import *
 
@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # 서버 설정
-HOST = '192.168.0.45'  # 서버 IP 주소
+HOST = '127.0.0.1'  # 서버 IP 주소
 PORT = 8888             # 사용할 포트 번호
 
 UDP_PORT = 9996
@@ -33,7 +33,7 @@ class FrameProcessor:
 
         self.operation_code = 0
         self.operation_code_lock = threading.Lock()  # 스레드 안전을 위한 락
-        self.body_follower = BodyFollower()
+        self.follower = Follower()
         self.running = True
 
         # 스레드 시작
@@ -110,7 +110,7 @@ class FrameProcessor:
                 front_plot = front_results[0].plot()
 
             elif current_operation == 3:  # Following mode
-                front_plot, sub_mode, diff_x, diff_y, body_size = self.body_follower.run(front_plot)
+                front_plot, sub_mode, diff_x, diff_y, body_size = self.follower.run(front_plot)
                 self.reset_send_data()
                 self.send_data["operating_code"] = current_operation
                 self.send_data["camera"] = 1

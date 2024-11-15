@@ -8,7 +8,7 @@ import queue
 import logging
 import pickle  # 추가된 임포트
 from ultralytics import YOLO
-from body_follower import *
+from follow_and_stop import *
 from udp_connection import *
 from aruco_identification import *
 
