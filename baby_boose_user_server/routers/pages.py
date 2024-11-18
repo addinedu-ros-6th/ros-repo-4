@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from state.shared_state import session_data, send_msg_q, TEMP_ROBOT_ID
+from state.shared_state import session_data, send_msg_q, TEMP_ROBOT_ID, GATE
 from utils.helpers import get_user_id
 import os
 
@@ -91,7 +91,7 @@ async def read_select_mode(request: Request):
 @router.get("/auto_delivery", response_class=HTMLResponse)
 async def read_auto_delivery(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "auto_delivery 8"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : f"auto_delivery {GATE}"})
 
     context = {"request": request, "mode_msg": "On the way of Auto Delivery"}
     return templates.TemplateResponse("auto_delivery.html", context)
