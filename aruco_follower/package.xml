@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>aruco_follower</name>
+  <version>0.0.1</version>
+  <description>Aruco Follower Node for Pinklab Minibot Robot</description>
+
+  <maintainer email="dkapqk8282@naver.com">Sehyung</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>py_trees</depend>
+  <depend>cv_bridge</depend>
+  <depend>OpenCV</depend>
+
+  <exec_depend>ament_python</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

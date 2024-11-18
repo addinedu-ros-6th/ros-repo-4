@@ -1,0 +1,23 @@
+digraph pastafarianism {
+ordering=out;
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+"Navigate Waypoints Sequence" [fillcolor=orange, fontcolor=black, fontsize=9, label="Ⓜ Navigate Waypoints Sequence", shape=box, style=filled];
+"Load Waypoints" [fillcolor=gray, fontcolor=black, fontsize=9, label="Load Waypoints", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Load Waypoints";
+"Check Goal Received" [fillcolor=gray, fontcolor=black, fontsize=9, label="Check Goal Received", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Check Goal Received";
+"Set Destination" [fillcolor=gray, fontcolor=black, fontsize=9, label="Set Destination", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Set Destination";
+"Plan Path" [fillcolor=gray, fontcolor=black, fontsize=9, label="Plan Path", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Plan Path";
+"Check Plan Received" [fillcolor=gray, fontcolor=black, fontsize=9, label="Check Plan Received", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Check Plan Received";
+"Filter Waypoints" [fillcolor=gray, fontcolor=black, fontsize=9, label="Filter Waypoints", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Filter Waypoints";
+"Visualize Waypoints" [fillcolor=gray, fontcolor=black, fontsize=9, label="Visualize Waypoints", shape=ellipse, style=filled];
+"Navigate Waypoints Sequence" -> "Visualize Waypoints";
+"Navigate Through Waypoints" [fillcolor=orange, fontcolor=black, fontsize=9, label="Ⓜ Navigate Through Waypoints", shape=box, style=filled];
+"Navigate Waypoints Sequence" -> "Navigate Through Waypoints";
+}
