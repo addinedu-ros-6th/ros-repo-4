@@ -83,5 +83,38 @@
     
     <!-- 오프라인 Bootstrap JS 연결 -->
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // WebSocket 연결 설정
+        const ws = new WebSocket(`ws://${window.location.host}/ws/auto_delivery`);
+
+        ws.onopen = function(event) {
+            console.log("WebSocket 연결이 열렸습니다.");
+        };
+
+        ws.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            console.log("수신한 메시지:", message);
+
+            // 메시지 타입에 따라 처리
+            if (message.type === "status_update") {
+                document.getElementById("message").innerText = message.message;
+            } else if (message.type === "update_image") {
+                document.getElementById("face-photo").src = `/images/faces/${message.image_name}`;
+            } else if (message.type === "navigate") {
+                window.location.href = message.url;
+            }
+
+            // 추가적인 메시지 처리 로직을 여기에 작성
+            // 예: document.getElementById("message").innerText = JSON.stringify(message);
+        };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket 연결이 닫혔습니다.");
+        };
+
+        ws.onerror = function(event) {
+            console.error("WebSocket 오류:", event);
+        };
+    </script>
 </body>
 </html>

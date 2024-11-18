@@ -186,23 +186,6 @@
             uploadButton.style.display = 'block'; // Upload 버튼 표시
         });
 
-        // Upload 버튼 클릭 시 이미지를 서버로 전송
-        uploadButton.addEventListener('click', async () => {
-            const imageDataUrl = canvas.toDataURL('image/png'); // 캔버스의 이미지를 데이터 URL로 변환
-            const response = await fetch('/upload_image', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ image_data: imageDataUrl }),
-            });
-            if (response.ok) {
-                alert("Image uploaded successfully!");
-            } else {
-                alert("Failed to upload image.");
-            }
-        });
-
         // 페이지 로드 시 카메라 시작
         window.addEventListener('load', startCamera);
 
