@@ -91,7 +91,7 @@ async def read_select_mode(request: Request):
 @router.get("/auto_delivery", response_class=HTMLResponse)
 async def read_auto_delivery(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "auto_delivery"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "auto_delivery 8"})
 
     context = {"request": request, "mode_msg": "On the way of Auto Delivery"}
     return templates.TemplateResponse("auto_delivery.html", context)
