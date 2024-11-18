@@ -20,21 +20,32 @@ class FrameReceiver:
         self.port = udp_port
 
         # UDP 소켓 설정
-        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
-        # multicast 사용 시
-        self.udp_socket.bind((MULTICAST_IP, udp_port))
+        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        # Linux 플랫폼에서 SO_REUSEPORT 설정
+        try:
+            self.udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        except AttributeError:
+            pass
+
+        # 멀티캐스트 바인딩
+        try:
+            self.udp_socket.bind(('0.0.0.0', udp_port))  # '0.0.0.0'으로 바인딩
+        except Exception as e:
+            print(f"포트 {udp_port} 바인딩 실패: {e}")
+            return
+
+        # 멀티캐스트 그룹 가입
         group = socket.inet_aton(MULTICAST_IP)
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         self.udp_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-
-        # 일반 UDP 사용 시
-        # self.udp_socket.bind((UDP_IP, udp_port))
 
         self.frame_buffer = {}
         self.lock = threading.Lock()
         self.frame_queue = frame_queue
         self.udp_port = udp_port  # 디버깅을 위한 포트 정보 저장
+
 
     def receive_data(self):
         while True:
