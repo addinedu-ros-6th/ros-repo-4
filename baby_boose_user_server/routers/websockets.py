@@ -102,7 +102,7 @@ async def websocket_cargo_open(websocket: WebSocket):
             # Asynchronously get message from recv_msg_q
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, get_latest_message, recv_msg_q)
-            
+            print(f"data: {data}")
             if data is None:
                 await asyncio.sleep(0.05)  
                 continue
@@ -131,8 +131,51 @@ async def websocket_cargo_open(websocket: WebSocket):
             # Asynchronously get message from recv_msg_q
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, get_latest_message, recv_msg_q)
-            await asyncio.sleep(0.05)  
 
+            if data is None:
+                await asyncio.sleep(0.05)  
+                continue
+
+            if data["robot_id"] == robot_id:
+                state = data.get("state", "").split(" ")
+                print(state)
+                if state[0] == "arrived":
+                    await websocket.send_text(json.dumps({
+                        "type": "navigate",
+                        "url": "/cargo_open_final"
+                    }))
+ 
+                    
+    except WebSocketDisconnect:
+        print("Cargo Open WebSocket disconnected")
+
+
+@router.websocket("/ws/auto_delivery")
+async def websocket_cargo_open(websocket: WebSocket):
+    await websocket.accept()
+    
+    user_id = get_user_id_from_scope(websocket.scope)
+    robot_id = session_data[user_id]["robot_id"]
+    
+    try:
+        while True:
+            # Asynchronously get message from recv_msg_q
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, get_latest_message, recv_msg_q)
+            
+            if data is None:
+                await asyncio.sleep(0.05)  
+                continue
+            
+            print(f"data: {data}")
+            if data["robot_id"] == robot_id:
+                state = data.get("state", "").split(" ")
+                print(state)
+                if state[0] == "arrived" and state[1] == "8":
+                    await websocket.send_text(json.dumps({
+                        "type": "navigate",
+                        "url": "/arrived_gate"
+                    }))
                     
     except WebSocketDisconnect:
         print("Cargo Open WebSocket disconnected")

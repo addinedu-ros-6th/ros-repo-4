@@ -143,13 +143,13 @@ async def read_cargo_open_pick_up(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("cargo_open_pick_up.html", context)
 
-@router.get("/gate", response_class=HTMLResponse)
+@router.get("/arrived_gate", response_class=HTMLResponse)
 async def read_at_the_gate(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "gate"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "arrived_gate"})
 
     context = {"request": request}
-    return templates.TemplateResponse("gate.html", context)
+    return templates.TemplateResponse("arrived_gate.html", context)
 
 @router.get("/face_recognition", response_class=HTMLResponse)
 async def read_face_identification(request: Request):
