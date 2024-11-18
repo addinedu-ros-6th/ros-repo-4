@@ -8,7 +8,7 @@ import queue
 import logging
 import pickle  # 추가된 임포트
 from ultralytics import YOLO
-from ai_server.follow_and_pause import *
+from follow_and_pause import *
 from udp_connection import *
 from aruco_identification import *
 
@@ -22,17 +22,17 @@ PORT = 8888             # 사용할 포트 번호
 
 UDP_PORT = 9996
 
-FRONT_LANZ_CAL_PATH = "lanz_calibration/calibration_minibot25.pkl"
+FRONT_LANZ_CAL_PATH = "lanz_calibration/calibration_minibot5.pkl"
 
 class FrameProcessor:
     def __init__(self, front_frame_queue, front_display_queue, send_msg_queue):
-        self.model = YOLO("yolov8s.pt")  # GPU 사용 설정
+        # self.model = YOLO("yolov8s.pt")  # GPU 사용 설정
         self.front_frame_queue = front_frame_queue
         self.front_display_queue = front_display_queue
         self.send_msg_queue = send_msg_queue
 
-        self.operation_code = 0
-        self.operation_code_lock = threading.Lock()  # 스레드 안전을 위한 락
+        self.state = "start"
+        self.state_lock = threading.Lock()  # 스레드 안전을 위한 락
         self.follower = Follower()
         self.running = True
 
@@ -41,15 +41,16 @@ class FrameProcessor:
         self.thread.start()
 
         self.send_data = {
-            "operating_code": 0,
+            "state": "idle",
             "camera": 1,             # 1: front 2: rear
-            "following":{            # 오타 수정
-                "sub_mode": 0,       # 0: stop & searching 1: too far 2: move to left 3: move to right 4: following 
+            "follow":{            # 오타 수정
+                "sub_mode": 0,       # 0: stop & searching 1: too far 2: move to left 3: move to right 4: following 5: pause
                 "diff_x": 9999,
                 "diff_y": 9999,
                 "body_size": 0,
+                "hand": "Others",
             },
-            "obstacle": {
+            "aruco": {
                 "detected": 0,
                 "class": 0,         # 추후 정의 필요
                 "conf": 0.0,
@@ -58,14 +59,11 @@ class FrameProcessor:
                 "bbox_width": 0,
                 "bbox_height": 0, 
             },
-            "face": {
-                "conf" : 0.0,
-            }
         }
 
-    def update_operation_code(self, new_code):
-        with self.operation_code_lock:
-            self.operation_code = new_code
+    def update_state(self, new_state):
+        with self.state_lock:
+            self.state = new_state
 
     def undistortion(self, distorted_plot, path):
         # 캘리브레이션 데이터 로드
@@ -100,61 +98,41 @@ class FrameProcessor:
             front_plot = cv2.flip(distorted_front_frame, 1)
             front_plot = self.undistortion(front_plot, FRONT_LANZ_CAL_PATH)
 
-            # operation_code 읽을 때 락 사용
-            with self.operation_code_lock:
-                current_operation = self.operation_code
+            # state 읽을 때 락 사용
+            with self.state_lock:
+                current_state = self.state
 
-            if current_operation == 1:
+            if current_state == "test":
                 # 전면 카메라 이미지 예측
                 front_results = self.model.predict(source=front_plot, classes=[0, 13, 15, 16, 28, 57], verbose=False)
                 front_plot = front_results[0].plot()
 
-            elif current_operation == 3:  # Following mode
-                front_plot, sub_mode, diff_x, diff_y, body_size = self.follower.run(front_plot)
-                self.reset_send_data()
-                self.send_data["operating_code"] = current_operation
+            elif current_state == "follow":  # Following mode
+                front_plot, sub_mode, diff_x, diff_y, body_size, hand = self.follower.run(front_plot)
+                self.send_data["state"] = self.state
                 self.send_data["camera"] = 1
-                self.send_data["following"]["sub_mode"] = sub_mode  
-                self.send_data["following"]["diff_x"] = diff_x     
-                self.send_data["following"]["diff_y"] = diff_y     
-                self.send_data["following"]["body_size"] = body_size 
+                self.send_data["follow"]["sub_mode"] = sub_mode  
+                self.send_data["follow"]["diff_x"] = diff_x     
+                self.send_data["follow"]["diff_y"] = diff_y     
+                self.send_data["follow"]["body_size"] = body_size 
+                self.send_data["follow"]["hand"] = hand
+
+                # 메시지 큐에 데이터 추가           
+                if self.send_msg_queue.full():
+                    self.send_msg_queue.get_nowait()
+                self.send_msg_queue.put(self.send_data, block=False)
+            elif current_state == "follow_pause":  # Follow Pause mode
+                self.send_data["state"] = self.state
+                self.send_data["follow"]["hand"] = "others"
+
             else:
-                pass  # 다른 operation_code 처리
+                pass  # 다른 state 처리
 
             # 디스플레이 큐에 프레임 추가
             if self.front_display_queue.full():
                 self.front_display_queue.get_nowait()
             self.front_display_queue.put(front_plot, block=False)
             
-            # 메시지 큐에 데이터 추가           
-            if self.send_msg_queue.full():
-                self.send_msg_queue.get_nowait()
-            self.send_msg_queue.put(self.send_data, block=False)
- 
-    def reset_send_data(self):
-        self.send_data = {
-            "operating_code": 0,
-            "camera": 1,             # 1: front 2: rear
-            "following":{            # 오타 수정
-                "sub_mode": 0,        # 0: stop & searching 1: too far 2: move to left 3: move to right 4: following 
-                "diff_x": 9999,
-                "diff_y": 9999,
-                "body_size": 0,
-            },
-            "obstacle": {
-                "detected": 0,
-                "class": 0,         # 추후 정의 필요
-                "conf": 0.0,
-                "bbox_x": 0,
-                "bbox_y": 0,
-                "bbox_width": 0,
-                "bbox_height": 0, 
-            },
-            "face": {
-                "conf" : 0.0,
-            }
-        }
-
     def stop(self):
         self.running = False
         self.thread.join()
@@ -192,7 +170,7 @@ class ClientHandler:
         self.client_address = client_address
         self.frame_processor = frame_processor
 
-        self.send_msg_queue = send_msg_queue  # 오타 수정
+        self.send_msg_queue = send_msg_queue 
 
         self.running = True
 
@@ -205,16 +183,23 @@ class ClientHandler:
 
     def handle_client_socket(self):
         logger.info(f"{self.client_address} connected!")
+        buffer = ""
         try:
             while self.running:
                 data = self.client_socket.recv(1024).decode('utf-8')
                 if not data:
                     logger.info(f"({self.client_address[0]}) disconnected!")
                     break
+                buffer += data
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    if line.strip() == "":
+                        continue  # 빈 줄은 무시
                 try:
-                    json_data = json.loads(data)
-                    new_operation_code = json_data.get("operating_code", self.frame_processor.operation_code)
-                    self.frame_processor.update_operation_code(new_operation_code)
+                    json_data = json.loads(line)
+                    
+                    new_state = json_data.get("state", self.frame_processor.state)
+                    self.frame_processor.update_state(new_state)
                 except json.JSONDecodeError:
                     logger.warning("Received data is not valid JSON")
                 except Exception as e:
@@ -233,6 +218,7 @@ class ClientHandler:
                 try:
                     # FrameProcessor에서 최신 데이터를 가져와서 전송
                     json_data = json.dumps(data)
+                    json_data += '\n'
                     self.client_socket.sendall(json_data.encode('utf-8'))
                     time.sleep(0.03) 
                 except Exception as e:

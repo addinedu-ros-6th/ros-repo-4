@@ -28,7 +28,7 @@
             top: 10px;
             right: 10px;
             font-size: 2rem; /* 뒤로 가기 버튼 크기 */
-            color:#0056b3;
+            color: #0056b3;
         }
         
         /* 화면 중앙에 버튼 위치 */
@@ -55,17 +55,12 @@
             background-color: #0056b3; /* 호버 시 버튼 색상 */
         }
 
-        /* 이미지와 버튼 사이 간격 */
         .main-image {
             margin-bottom: 5px; /* 이미지와 버튼 사이의 공간 */
             width: 250px;        /* 이미지 크기 */
             height: auto;        /* 종횡비 유지 */
         }
-        .main-image2 {
-            margin-bottom: 5px; /* 이미지와 버튼 사이의 공간 */
-            width: 380px;        /* 이미지 크기 */
-            height: auto;        /* 종횡비 유지 */
-        }
+
     </style>
 </head>
 <body>
@@ -77,53 +72,19 @@
     <a href="javascript:history.back()" class="top-right-icon">
         <i class="bi bi-arrow-left-circle"></i> <!-- 뒤로 가기 아이콘 -->
     </a>
-    <br><br><br>
+    <br><br>
     <div class="container text-center mt-5">
-        <h1>I'm Following you!</h1>
-        <img src="images/following.png" alt="Porter Goose Image" class="main-image2">
+        <h1>Pause!!</h1>
+        <p>I'm waiting for you. </p>
+        <img src="images/waiting_goose.png" alt="Porter Goose Image" class="main-image">
 
-        <br>
-        <h1>If you want to stop...</h1>
+        <a href="/follow" class="btn btn-custom">Keep Going!</a>
+        <a href="/take_a_break" class="btn btn-custom">Wait on the Parking Place.</a>
+        <a href="/show_location" class="btn btn-custom">MAP</a>
+        </div>
+    </div> 
 
-        <img src="images/palm.png" alt="Porter Goose Image" class="main-image">
-        <br>
-
-    </div>
-    
     <!-- 오프라인 Bootstrap JS 연결 -->
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        // WebSocket 연결 설정
-        const ws = new WebSocket(`ws://${window.location.host}/ws/follow`);
-
-        ws.onopen = function(event) {
-            console.log("WebSocket 연결이 열렸습니다.");
-        };
-
-        ws.onmessage = function(event) {
-            const message = JSON.parse(event.data);
-            console.log("수신한 메시지:", message);
-
-            // 메시지 타입에 따라 처리
-            if (message.type === "status_update") {
-                document.getElementById("message").innerText = message.message;
-            } else if (message.type === "update_image") {
-                document.getElementById("face-photo").src = `/images/faces/${message.image_name}`;
-            } else if (message.type === "navigate") {
-                window.location.href = message.url;
-            }
-
-            // 추가적인 메시지 처리 로직을 여기에 작성
-            // 예: document.getElementById("message").innerText = JSON.stringify(message);
-        };
-
-        ws.onclose = function(event) {
-            console.log("WebSocket 연결이 닫혔습니다.");
-        };
-
-        ws.onerror = function(event) {
-            console.error("WebSocket 오류:", event);
-        };
-    </script>
 </body>
 </html>

@@ -1,10 +1,4 @@
-# main.py
-import os
-import cv2
-import asyncio
-import json
-import base64
-
+import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -15,7 +9,7 @@ from utils.helpers import get_user_id, get_user_id_from_scope
 from tcp_server import TCPServer
 
 # Initialize TCP Server
-GOOGEESE_GUI_HOST = '192.168.0.45' 
+GOOGEESE_GUI_HOST = '127.0.0.1'
 GOOGEESE_GUI_PORT = 8889
 
 
@@ -36,3 +30,6 @@ except Exception as e:
 app.include_router(pages.router)
 app.include_router(api.router)
 app.include_router(websockets.router)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

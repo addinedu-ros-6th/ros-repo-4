@@ -88,16 +88,16 @@ async def read_select_mode(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("select_mode.html", context)
 
-@router.get("/auto_drive", response_class=HTMLResponse)
-async def read_auto_driving(request: Request):
+@router.get("/auto_delivery", response_class=HTMLResponse)
+async def read_auto_delivery(request: Request):
     user_id = get_user_id(request)
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "auto_delivery"})
 
     context = {"request": request, "mode_msg": "On the way of Auto Delivery"}
-    return templates.TemplateResponse("auto_drive.html", context)
+    return templates.TemplateResponse("auto_delivery.html", context)
 
 @router.get("/guide", response_class=HTMLResponse)
-async def read_guiding(request: Request):
+async def read_guide(request: Request):
     user_id = get_user_id(request)
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "guide"})
 
@@ -112,13 +112,13 @@ async def read_following(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("follow.html", context)
 
-@router.get("/stop", response_class=HTMLResponse)
-async def read_stop(request: Request):
+@router.get("/follow_pause", response_class=HTMLResponse)
+async def read_pause(request: Request):
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "stop"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "follow_pause"})
 
     context = {"request": request}
-    return templates.TemplateResponse("stop.html", context)
+    return templates.TemplateResponse("follow_pause.html", context)
 
 @router.get("/map", response_class=HTMLResponse)
 async def read_map(request: Request):

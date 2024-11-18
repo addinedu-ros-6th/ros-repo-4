@@ -49,6 +49,7 @@ class TCPConnect(object):
 
                     # JSON 데이터를 문자열로 변환 및 인코딩 후 전송
                     json_data = json.dumps(data)
+                    json_data += '\n'
                     client_socket.sendall(json_data.encode('utf-8'))
                 else:
                     time.sleep(self.interval)
@@ -57,21 +58,27 @@ class TCPConnect(object):
     
     def recv_server(self, client_socket):
         """서버에 데이터를 지속적으로 응답을 받아 큐로 전달하는 함수"""
+        buffer = ""
         try:
             while True:
-                # 서버로부터 데이터 수신 (최대 4096 바이트)
-                response = client_socket.recv(4096)
+                # 서버로부터 데이터 수신 (최대 1024 바이트)
+                response = client_socket.recv(1024).decode('utf-8')
                 if not response:
                     # 서버가 연결을 종료한 경우
                     print("Server closed the connection.")
                     break
-                try:
-                    # 수신한 데이터를 디코딩하고 JSON으로 변환
-                    json_response = json.loads(response.decode('utf-8'))
-                    self.recv_q.put(json_response)
-                    time.sleep(self.interval)
-                except json.JSONDecodeError:
-                    print("Received non-JSON data:", response.decode('utf-8'))
+                buffer += response
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    if line.strip() == "":
+                        continue  # 빈 줄은 무시
+                    try:
+                        # 수신한 데이터를 디코딩하고 JSON으로 변환
+                        json_response = json.loads(line)
+                        self.recv_q.put(json_response)
+                        time.sleep(self.interval)
+                    except json.JSONDecodeError:
+                        print("Received non-JSON data:", response.decode('utf-8'))
         except Exception as e:
             print(f"Receive thread error: {e}")
 

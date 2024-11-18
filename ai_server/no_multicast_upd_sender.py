@@ -6,8 +6,7 @@ import time
 
 # 전면 카메라만 사용하는 코드
 # 서버 IP 및 포트 설정
-# MULTICAST_IP = '224.1.1.1'
-MULTICAST_IP = '192.168.1.16' 
+MULTICAST_IP = '224.1.1.1'
 UDP_PORT1 = 9996  # 카메라용 포트
 MAX_DGRAM = 1300  # 패킷 크기를 MTU 이하로 설정하여 단편화 방지
 

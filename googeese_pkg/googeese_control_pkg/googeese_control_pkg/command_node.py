@@ -7,7 +7,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from googeese_control_pkg.tcp_connection import TCPConnect
 
-GOOGEESE_GUI_HOST = '172.25.70.196'
+GOOGEESE_GUI_HOST = '127.0.0.1'
 GOOGEESE_GUI_PORT = 8889
 TIME_INTERVAL = 0.5
 
@@ -81,6 +81,7 @@ class CommandNode(Node):
         이를 통해 GUI 동작 정보를 제공 (TCP/IP)
         """
         self.response["state"] = res_msg.data
+        self.get_logger().info(f"{self.response}")
         self.send_gui_server_q.put(self.response)
 
 def main(args=None):

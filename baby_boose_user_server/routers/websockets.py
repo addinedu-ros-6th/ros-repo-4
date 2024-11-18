@@ -6,6 +6,12 @@ from utils.helpers import get_user_id_from_scope
 
 router = APIRouter()
 
+def get_latest_message(q):
+    """Queue 를 비우고 가장 마지막 값을 가져옴"""
+    latest = None
+    while not q.empty():
+        latest = q.get()
+    return latest
 
 @router.websocket("/ws/ticket_scan")
 async def websocket_ticket_scan(websocket: WebSocket):
@@ -56,12 +62,9 @@ async def websocket_cargo_open(websocket: WebSocket):
     try:
         while True:
             # Asynchronously get message from recv_msg_q
-            print("dfsdf")
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, recv_msg_q.get)
-            print(data)
             print(data["robot_id"])
-            print(robot_id)
             display_message = "Not yet"
             if data["robot_id"] == robot_id:
                 state = data.get("state", "").split(" ")
@@ -84,5 +87,52 @@ async def websocket_cargo_open(websocket: WebSocket):
             
             # Send status update to client
             await websocket.send_text(json.dumps({"type": "status_update", "message": display_message}))
+    except WebSocketDisconnect:
+        print("Cargo Open WebSocket disconnected")
+
+@router.websocket("/ws/follow")
+async def websocket_cargo_open(websocket: WebSocket):
+    await websocket.accept()
+    
+    user_id = get_user_id_from_scope(websocket.scope)
+    robot_id = session_data[user_id]["robot_id"]
+    
+    try:
+        while True:
+            # Asynchronously get message from recv_msg_q
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, get_latest_message, recv_msg_q)
+            
+            if data is None:
+                await asyncio.sleep(0.05)  
+                continue
+
+            if data["robot_id"] == robot_id:
+                state = data.get("state", "").split(" ")
+                print(state)
+                if state[0] == "follow" and state[1] == "pause":
+                    await websocket.send_text(json.dumps({
+                        "type": "navigate",
+                        "url": "/follow_pause"
+                    }))
+                    
+    except WebSocketDisconnect:
+        print("Cargo Open WebSocket disconnected")
+
+@router.websocket("/ws/follo_pause")
+async def websocket_cargo_open(websocket: WebSocket):
+    await websocket.accept()
+    
+    user_id = get_user_id_from_scope(websocket.scope)
+    robot_id = session_data[user_id]["robot_id"]
+    
+    try:
+        while True:
+            # Asynchronously get message from recv_msg_q
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, get_latest_message, recv_msg_q)
+            await asyncio.sleep(0.05)  
+
+                    
     except WebSocketDisconnect:
         print("Cargo Open WebSocket disconnected")

@@ -54,8 +54,8 @@ class TCPServer():
             while True:
                 if not self.send_msg_q.empty():
                     data = self.send_msg_q.get()
-
                     json_data = json.dumps(data)
+                    json_data += '\n'
                     client_socket.sendall(json_data.encode('utf-8'))
                 else:
                     time.sleep(TIME_INTERVAL)
@@ -63,20 +63,27 @@ class TCPServer():
             print(f"Send thread error: {e}")
 
     def recv_client(self, client_socket):
+        buffer = ""
         try:
             while True:
-                response = client_socket.recv(4096)
+                # 서버로부터 데이터 수신 (최대 1024 바이트)
+                response = client_socket.recv(1024).decode('utf-8')
                 if not response:
-                    # 클라이언트가 연결을 종료한 경우
-                    print("Client closed the connection.")
+                    # 서버가 연결을 종료한 경우
+                    print("Server closed the connection.")
                     break
-                try:
-                    # 수신한 데이터를 디코딩하고 JSON으로 변환
-                    json_response = json.loads(response.decode('utf-8'))
-                    self.recv_msg_q.put(json_response)
-                    time.sleep(TIME_INTERVAL)
-                except json.JSONDecodeError:
-                    print("Received non-JSON data:", response.decode('utf-8'))
+                buffer += response
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    if line.strip() == "":
+                        continue  # 빈 줄은 무시
+                    try:
+                        # 수신한 데이터를 디코딩하고 JSON으로 변환
+                        json_response = json.loads(line)
+                        self.recv_msg_q.put(json_response)
+                        time.sleep(TIME_INTERVAL)
+                    except json.JSONDecodeError:
+                        print("Received non-JSON data:", response.decode('utf-8'))
         except Exception as e:
             print(f"Receive thread error: {e}")
 

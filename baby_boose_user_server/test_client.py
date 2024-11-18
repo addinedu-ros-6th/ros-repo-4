@@ -7,15 +7,30 @@ import time
 HOST = '192.168.0.45'  # 서버 IP 주소
 PORT = 8889             # 서버 포트 번호
 
-TIME_INTERVAL = 0.5
+TIME_INTERVAL = 1
 
 # JSON 데이터 생성
-data = {"robot_id": 5, "state": "cargo open full"}
+data = {"robot_id": 5, "state": ""}
+s1 = "cargo close empty"
+s2 = "cargo open empty"
+s3 = "cargo open full"
+s4 = "cargo close full"
 
 def send_data(client_socket, data):
+    counter = 1
     """서버에 데이터를 지속적으로 전송하는 함수"""
     try:
         while True:
+
+            if counter % 4 == 1:
+                data["state"] = s1
+            elif counter % 4 == 2:
+                data["state"] = s2
+            elif counter % 4 == 3:
+                data["state"] = s3
+            else:
+                data["state"] = s4
+
             # JSON 데이터를 문자열로 변환 및 인코딩 후 전송
             json_data = json.dumps(data)
             client_socket.sendall(json_data.encode('utf-8'))
@@ -23,6 +38,7 @@ def send_data(client_socket, data):
             
             # 0.05초 대기
             time.sleep(TIME_INTERVAL)
+            counter += 1
     except Exception as e:
         print(f"Send thread error: {e}")
 

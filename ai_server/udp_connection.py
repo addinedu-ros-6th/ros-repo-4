@@ -13,6 +13,7 @@ UDP_PORT4 = 9999   # 네 번째 카메라용 포트
 
 MAX_DGRAM = 65507  # UDP의 최대 패킷 크기
 MULTICAST_IP = '224.1.1.1'
+# UDP_IP = '192.168.1.16'  
 
 class FrameReceiver:
     def __init__(self, udp_port, frame_queue):
@@ -20,10 +21,15 @@ class FrameReceiver:
 
         # UDP 소켓 설정
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        
+        # multicast 사용 시
         self.udp_socket.bind((MULTICAST_IP, udp_port))
         group = socket.inet_aton(MULTICAST_IP)
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         self.udp_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+        # 일반 UDP 사용 시
+        # self.udp_socket.bind((UDP_IP, udp_port))
 
         self.frame_buffer = {}
         self.lock = threading.Lock()
