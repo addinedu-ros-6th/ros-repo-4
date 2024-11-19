@@ -32,7 +32,7 @@ async def upload_image(request: Request, data: ImageData):
 
 
 @router.post("/recognition_image")
-async def upload_image(request: Request, data: ImageData):
+async def face_recognition(request: Request, data: ImageData):
     user_id = get_user_id(request)
     origin_image_path = os.path.join("images", "faces", f"{user_id}.png")
     
@@ -59,7 +59,7 @@ async def upload_image(request: Request, data: ImageData):
     response = rekognition_client.compare_faces(
         SourceImage={'Bytes': source_image_bytes},
         TargetImage={'Bytes': image_bytes},
-        SimilarityThreshold=95  # 유사도 기준값 설정
+        SimilarityThreshold=1  # 유사도 기준값 설정
     )
     
     # Rekognition 결과 처리
@@ -67,8 +67,8 @@ async def upload_image(request: Request, data: ImageData):
         for match in response['FaceMatches']:
             similarity_by_aws = match['Similarity']
             # 확인 이미지에 유사도 표시
-            cv2.putText(img, f'Similarity: {similarity_by_aws:.2f}%', (18, 18),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
+            cv2.putText(img, f'Similarity: {similarity_by_aws:.2f}%', (0, 25),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (26, 85, 12), 2)
 
     # Define file path
     file_path = os.path.join("images", "faces", f"{user_id}_reco.png")
@@ -83,4 +83,7 @@ async def upload_image(request: Request, data: ImageData):
     else:
         print("요청 이미지 저장을 실패하였습니다. ")
 
-    return {"message": "Image uploaded successfully"}
+    # 이미지 URL 생성
+    image_url = f"/images/faces/{user_id}_reco.png"
+
+    return {"message": "Image uploaded successfully", "image_url": image_url, "similarity" : similarity_by_aws}

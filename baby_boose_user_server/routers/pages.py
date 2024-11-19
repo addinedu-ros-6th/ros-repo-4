@@ -165,7 +165,7 @@ async def read_cargo_open_final(request: Request):
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo open"})
 
     context = {"request": request}
-    return templates.TemplateResponse("cargo.html", context)
+    return templates.TemplateResponse("cargo_open_final`.html", context)
 
 @router.get("/thanks", response_class=HTMLResponse)
 async def read_thanks(request: Request, ):

@@ -15,6 +15,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative; /* 아이콘을 절대 위치로 배치하기 위해 relative 설정 */
         }
 
         .content-container {
@@ -61,6 +62,13 @@
             width: 320px;        /* 이미지 크기 */
             height: auto;        /* 종횡비 유지 */
         }
+        .processed-image {
+            margin-top: 20px;
+            width: 480px;         /* 원하는 너비로 설정 */
+            height: auto;
+            border: 2px solid #0056b3; /* 추가적인 스타일링 */
+            border-radius: 8px;
+        }
 
         /* 버튼 스타일 설정 */
         .btn-custom {
@@ -72,6 +80,8 @@
             margin-top: 10px;
             width: 100%;               /* 버튼 너비 화면 크기 기준 */
             max-width: 356px;          /* 최대 너비 설정 */
+            cursor: pointer;           /* 커서 포인터 변경 */
+            transition: background-color 0.3s ease; /* 부드러운 호버 전환 */
         }
 
         /* 버튼 호버 효과 */
@@ -79,13 +89,21 @@
             background-color: #004494; /* 호버 시 버튼 색상 */
         }
 
-        /* 이미지와 버튼 사이 간격 */
-        .main-image {
-            margin-bottom: 3px; /* 이미지와 버튼 사이의 공간 */
-            width: 320px;        /* 이미지 크기 */
-            height: auto;        /* 종횡비 유지 */
+        /* 추가: 확인 및 불일치 버튼 스타일 */
+        .btn-confirmed {
+            background-color: #28a745; /* 녹색 */
+        }
+        .btn-not-matched {
+            background-color: #dc3545; /* 빨간색 */
         }
 
+        /* 버튼 호버 효과 for confirmed and not matched */
+        .btn-confirmed:hover {
+            background-color: #218838; /* 더 진한 녹색 */
+        }
+        .btn-not-matched:hover {
+            background-color: #c82333; /* 더 진한 빨간색 */
+        }
     </style>
 </head>
 <body>
@@ -110,8 +128,7 @@
         <!-- 비디오 및 캡처 버튼 -->
         <video id="video" autoplay></video>
         <canvas id="canvas" style="display: none;"></canvas>
-        <button id="captureButton" class="btn-custom">Capture Photo</button>
-        <button id="uploadButton" class="btn-custom" style="display: none;">Upload Image</button>
+        <button id="captureButton" class="btn-custom">Face Verification</button>
     </div>
     
     <!-- 오프라인 Bootstrap JS 연결 -->
@@ -122,7 +139,6 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const captureButton = document.getElementById('captureButton');
-        const uploadButton = document.getElementById('uploadButton');
 
         // 카메라 스트림을 비디오에 연결
         async function startCamera() {
@@ -135,8 +151,13 @@
             }
         }
 
-        // 캡처 버튼 클릭 시 비디오 프레임을 캔버스로 복사하고 이미지 표시 및 버튼 전환
-        captureButton.addEventListener('click', () => {
+        // 캡처 버튼 클릭 시 비디오 프레임을 캔버스로 복사하고 서버로 업로드
+        captureButton.addEventListener('click', async () => {
+            // Disable the button to prevent multiple clicks
+            captureButton.disabled = true;
+            captureButton.hidden = true;
+            captureButton.textContent = 'Processing...';
+
             const context = canvas.getContext('2d');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -144,30 +165,82 @@
             video.style.display = 'none'; // 비디오 숨기기
             canvas.style.display = 'block'; // 캡처한 이미지 표시
 
-            captureButton.style.display = 'none'; // Capture 버튼 숨기기
-            uploadButton.style.display = 'block'; // Upload 버튼 표시
+            // 캡처한 이미지를 서버로 업로드
+            const imageDataUrl = canvas.toDataURL('image/png'); // 캔버스의 이미지를 데이터 URL로 변환
+            try {
+                const response = await fetch('/recognition_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image_data: imageDataUrl }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const imageUrl = result.image_url;
+                    const similarity = result.similarity;
+
+                    // 기존 콘텐츠 컨테이너에서 비디오와 캔버스를 숨김
+                    video.style.display = 'none';
+                    canvas.style.display = 'none';
+
+                    // 새로 저장된 이미지 요소 생성
+                    const newImage = document.createElement('img');
+                    newImage.src = imageUrl;
+                    newImage.alt = 'Recognition Result';
+                    newImage.classList.add('processed-image');
+
+                    // 유사도에 따라 버튼 생성
+                    const resultButton = document.createElement('button');
+                    resultButton.classList.add('btn', 'btn-custom', 'mt-3'); // Bootstrap 및 커스텀 클래스 추가
+
+                    if (similarity >= 95) {
+                        resultButton.textContent = 'Confirmed!';
+                        resultButton.classList.add('btn-confirmed'); // 녹색 버튼
+                        
+                        resultButton.addEventListener('click', () => {
+                            window.location.href = '/cargo_open_final';
+                        });                        
+                    } else {
+                        resultButton.textContent = 'Not Matched';
+                        resultButton.classList.add('btn-not-matched'); // 빨간색 버튼
+                        
+                        resultButton.addEventListener('click', () => {
+                            window.location.href = '/face_recognition';
+                        });
+                    }
+
+                    // 기존 콘텐츠 컨테이너에 새 이미지 및 버튼 추가
+                    const contentContainer = document.querySelector('.content-container');
+                    contentContainer.appendChild(newImage);
+                    contentContainer.appendChild(resultButton);
+
+                    // Optionally, you can reset the button for another capture
+                    // Uncomment the lines below if you want to allow another capture
+                    /*
+                    captureButton.disabled = false;
+                    captureButton.textContent = 'Capture Photo';
+                    video.style.display = 'block'; // 비디오 다시 표시
+                    */
+                } else {
+                    const errorData = await response.json();
+                    alert(`Failed to upload image: ${errorData.detail}`);
+                    // Re-enable the button in case of error
+                    captureButton.disabled = false;
+                    captureButton.textContent = 'Face Verification';
+                }
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                alert("An error occurred while uploading the image.");
+                // Re-enable the button in case of error
+                captureButton.disabled = false;
+                captureButton.textContent = 'Face Verification';
+            }
         });
 
         // 페이지 로드 시 카메라 시작
         window.addEventListener('load', startCamera);
-
-        // Upload 버튼 클릭 시 이미지를 서버로 전송
-        uploadButton.addEventListener('click', async () => {
-            const imageDataUrl = canvas.toDataURL('image/png'); // 캔버스의 이미지를 데이터 URL로 변환
-            const response = await fetch('/recognition_image', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ image_data: imageDataUrl }),
-            });
-            if (response.ok) {
-                alert("Image uploaded successfully!");
-                window.location.href = '/ticket_scan'; // 업로드 후 이동할 URL로 설정
-            } else {
-                alert("Failed to upload image.");
-            }
-        });
     </script>
 </body>
 </html>
