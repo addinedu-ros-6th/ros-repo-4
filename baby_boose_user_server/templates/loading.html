@@ -148,7 +148,7 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
         // WebSocket 연결 설정
-        const ws = new WebSocket(`ws://${window.location.host}/ws/cargo_open`);
+        const ws = new WebSocket(`ws://${window.location.host}/ws/loading`);
 
         ws.onopen = function(event) {
             console.log("WebSocket 연결이 열렸습니다.");
@@ -161,8 +161,6 @@
             // 메시지 타입에 따라 처리
             if (message.type === "status_update") {
                 document.getElementById("message").innerText = message.message;
-            } else if (message.type === "update_image") {
-                document.getElementById("face-photo").src = `/images/faces/${message.image_name}`;
             } else if (message.type === "navigate") {
                 window.location.href = message.url;
             }

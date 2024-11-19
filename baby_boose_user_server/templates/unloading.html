@@ -62,34 +62,10 @@
             height: auto;        /* 종횡비 유지 */
         }
 
-        /* 하단 수평 박스 컨테이너 */
-        .horizontal-boxes {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;                   /* 두 박스 사이 간격 */
-            margin-top: 5px;            /* 상단 콘텐츠와 간격 */
-        }
-
-        /* 첫 번째 박스 스타일 */
-        .box-1 {
-            background-color: #228B22;   /* 진한 풀색 배경 */
-            color: white;                /* 흰색 텍스트 */
-            padding: 5px;
-            flex: 1;                     /* 동일한 너비 설정 */
-            text-align: center;
-            border-radius: 8px;
-        }
-
-        /* 두 번째 박스 스타일 */
-        .box-2 {
-            background-color: lightblue;   /* 옅은 풀색 배경 */
-            color: black;                /* 검은색 텍스트 */
-            padding: 5px;
-            flex: 1;                     /* 동일한 너비 설정 */
-            text-align: center;
-            border-radius: 8px;
-            border: 2px solid #228B22;
+        #message {
+            font-size: 22px; /* 원하는 텍스트 크기로 조절 */
+            color: #333; /* 텍스트 색상 */
+            /* 추가 스타일 */
         }
     </style>
 </head>
@@ -104,17 +80,74 @@
     </a>
     <br><br>
     <div class="container text-center mt-5">
-        <h1>Unloading</h1>
-        <p>Please take your luggage.</p>
-        <br><br><br>
-
+        <h1>Unloding</h1>
+        <br>
+        <div id="message"></div>
+        <br>
         <img src="images/cargo_open.webp" alt="Porter Goose Image" class="main-image">
         <br><br>
-        <a href="/thanks" class="btn btn-custom">It's Done!</a>
+        <button class="btn btn-custom" onclick="enqueueAction()">Close Cargo Door</button>
     </div> 
 
     
     <!-- 오프라인 Bootstrap JS 연결 -->
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // WebSocket 연결 설정
+        const ws = new WebSocket(`ws://${window.location.host}/ws/unloading`);
+
+        ws.onopen = function(event) {
+            console.log("WebSocket 연결이 열렸습니다.");
+        };
+
+        ws.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            console.log("수신한 메시지:", message);
+
+            // 메시지 타입에 따라 처리
+            if (message.type === "status_update") {
+                document.getElementById("message").innerText = message.message;
+            } else if (message.type === "navigate") {
+                window.location.href = message.url;
+            }
+
+            // 추가적인 메시지 처리 로직을 여기에 작성
+            // 예: document.getElementById("message").innerText = JSON.stringify(message);
+        };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket 연결이 닫혔습니다.");
+        };
+
+        ws.onerror = function(event) {
+            console.error("WebSocket 오류:", event);
+        };
+
+        // New JavaScript Function to Enqueue Action
+        async function enqueueAction() {
+            try {
+                const response = await fetch('/enqueue_action', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'cargo close' }) // You can pass additional data if needed
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Action enqueued successfully:', result);
+                    document.getElementById("message").innerText;
+
+                    // Optionally, update the UI or navigate based on the response
+                } else {
+                    console.error('Failed to enqueue action:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error enqueuing action:', error);
+            }
+        }
+    </script>
 </body>
 </html>
+

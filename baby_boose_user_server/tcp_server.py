@@ -80,6 +80,7 @@ class TCPServer():
                     try:
                         # 수신한 데이터를 디코딩하고 JSON으로 변환
                         json_response = json.loads(line)
+                        # print(json_response)
                         self.recv_msg_q.put(json_response)
                         time.sleep(TIME_INTERVAL)
                     except json.JSONDecodeError:

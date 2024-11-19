@@ -52,7 +52,7 @@ async def websocket_ticket_scan(websocket: WebSocket):
     except WebSocketDisconnect:
         print("WebSocket disconnected")
 
-@router.websocket("/ws/cargo_open")
+@router.websocket("/ws/loading")
 async def websocket_cargo_open(websocket: WebSocket):
     await websocket.accept()
     
@@ -65,7 +65,7 @@ async def websocket_cargo_open(websocket: WebSocket):
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, recv_msg_q.get)
             print(data["robot_id"])
-            display_message = "Not yet"
+            display_message = "Open the Cargo... "
             if data["robot_id"] == robot_id:
                 state = data.get("state", "").split(" ")
                 if len(state) >= 3 and state[0] == "cargo":
@@ -81,6 +81,44 @@ async def websocket_cargo_open(websocket: WebSocket):
                         await websocket.send_text(json.dumps({
                             "type": "navigate",
                             "url": "/select_mode"
+                        }))
+                    else:
+                        display_message = "Ready..."
+            
+            # Send status update to client
+            await websocket.send_text(json.dumps({"type": "status_update", "message": display_message}))
+    except WebSocketDisconnect:
+        print("Cargo Open WebSocket disconnected")
+
+@router.websocket("/ws/unloading")
+async def websocket_cargo_open(websocket: WebSocket):
+    await websocket.accept()
+    
+    user_id = get_user_id_from_scope(websocket.scope)
+    robot_id = session_data[user_id]["robot_id"]
+    
+    try:
+        while True:
+            # Asynchronously get message from recv_msg_q
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, recv_msg_q.get)
+            print(data["robot_id"])
+            display_message = "Open the Cargo... "
+            if data["robot_id"] == robot_id:
+                state = data.get("state", "").split(" ")
+                if len(state) >= 3 and state[0] == "cargo":
+                    if state[1] == "close" and state[2] == "full":
+                        display_message = "Open the Cargo... "
+                    elif state[1] == "open" and state[2] == "empty":
+                        display_message = "Unloaded!"
+                    elif state[1] == "open" and state[2] == "full":
+                        display_message = "Please Take your lagguage"
+                    elif state[1] == "close" and state[2] == "empty":
+                        display_message = "done"
+                        
+                        await websocket.send_text(json.dumps({
+                            "type": "navigate",
+                            "url": "/thanks"
                         }))
                     else:
                         display_message = "Ready..."

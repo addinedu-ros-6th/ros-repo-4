@@ -72,13 +72,13 @@ async def read_confirmation(request: Request):
 
     return templates.TemplateResponse("confirmation.html", context)
 
-@router.get("/cargo_open", response_class=HTMLResponse)
+@router.get("/loading", response_class=HTMLResponse)
 async def read_cargo_open(request: Request):
     user_id = get_user_id(request)
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo open"})
 
     context = {"request": request}
-    return templates.TemplateResponse("cargo.html", context)
+    return templates.TemplateResponse("loading.html", context)
 
 @router.get("/select_mode", response_class=HTMLResponse)
 async def read_select_mode(request: Request):
@@ -159,13 +159,13 @@ async def read_face_identification(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("face_recognition.html", context)
 
-@router.get("/cargo_open_final", response_class=HTMLResponse)
+@router.get("/unloading", response_class=HTMLResponse)
 async def read_cargo_open_final(request: Request):
     user_id = get_user_id(request)
     send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "cargo open"})
 
     context = {"request": request}
-    return templates.TemplateResponse("cargo_open_final`.html", context)
+    return templates.TemplateResponse("unloading.html", context)
 
 @router.get("/thanks", response_class=HTMLResponse)
 async def read_thanks(request: Request, ):

@@ -4,7 +4,7 @@ import json
 import time
 
 # 서버 설정
-HOST = '192.168.0.45'  # 서버 IP 주소
+HOST = '127.0.0.1'  # 서버 IP 주소
 PORT = 8889             # 서버 포트 번호
 
 TIME_INTERVAL = 1
@@ -31,12 +31,14 @@ def send_data(client_socket, data):
             else:
                 data["state"] = s4
 
+            print(data)
             # JSON 데이터를 문자열로 변환 및 인코딩 후 전송
             json_data = json.dumps(data)
+            json_data += '\n'
             client_socket.sendall(json_data.encode('utf-8'))
             # print("Data sent to server:", json_data)
             
-            # 0.05초 대기
+            # 1초 대기
             time.sleep(TIME_INTERVAL)
             counter += 1
     except Exception as e:
