@@ -1,7 +1,7 @@
 import qrcode
 
 data = """
-name : Mr. GOOGEESE
+name : Mr. 99
 passport : M12345678
 flight number : AC2505
 from : ICN
