@@ -171,7 +171,9 @@
 					"navigationButtons":[
 						{
 							"homeBtn": "page_6",
-                            "monitorBtn": "page_8"
+							"dataBtn": "page_7",
+                            "monitorBtn": "page_8",
+							"reviewBtn": "page_9"
 						}
 					]
 				}
@@ -209,7 +211,9 @@
 		{
 			"Buttons": [
 				"homeBtn",
-				"monitorBtn"
+				"dataBtn",
+				"monitorBtn",
+				"reviewBtn"
 			],
 			"Style":[
 				{

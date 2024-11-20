@@ -1,11 +1,8 @@
 import sys
 import multiprocessing
-import threading
 import os
-import cv2
 import rclpy
 from rclpy.node import Node
-from rclpy.action import ActionClient
 import yaml
 from PySide2 import QtGui
 from PySide2.QtCore import Qt, QTimer, QObject, Signal
@@ -14,18 +11,16 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QSizePolicy, QVBoxLayou
 from ui_interface import Ui_MainWindow
 from Custom_Widgets.Widgets import *
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from sensor_msgs.msg import Range
 from std_msgs.msg import Bool
-from std_msgs.msg import String
 from minibot_interfaces.msg import RobotState
-from nav2_msgs.action import NavigateToPose
 
 
-def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, motor_status_queue, lidar_status_queue, mode_state_queue, shutdown_event, command_queue):
+def robot_monitor_process(robot_name, domain_id, status_queue, position_queue, motor_status_queue, lidar_status_queue):
     # 도메인 ID 설정
-    os.environ['ROS_DOMAIN_ID'] = str(robot_id)
-    print(f"[{robot_name} Process] ROS_DOMAIN_ID set to {robot_id}")
+    os.environ['ROS_DOMAIN_ID'] = str(domain_id)
+    print(f"[{robot_name} Process] ROS_DOMAIN_ID set to {domain_id}")
 
     # ROS2 초기화
     rclpy.init(args=None)
@@ -33,24 +28,16 @@ def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, mo
 
     # 노드 정의
     class RobotConnectionNode(Node):
-        def __init__(self, robot_name, status_queue, position_queue, motor_status_queue, lidar_status_queue, mode_state_queue, command_queue):
+        def __init__(self, robot_name, status_queue, position_queue, motor_status_queue, lidar_status_queue):
             super().__init__(f'{robot_name}_connection_node')
             self.robot_name = robot_name
-            self.robot_id = robot_id
-            # 로봇 on/off 상태
             self.status_queue = status_queue
-            # 로봇 위치 좌표 구독
             self.position_queue = position_queue
-            # 모터 상태 구독
+            # 모터 상태 구독 test
             self.motor_status_queue = motor_status_queue
-            # 라이다 상태 구독 
+            # 라이다 상태 구독 test
             self.lidar_status_queue = lidar_status_queue
-            # 로봇 모드 상태 구독
-            self.mode_state_queue = mode_state_queue
-            
-            self.command_queue = command_queue
             self.connected = False
-            # 상태 메세지 구독
             self.subscription_status = self.create_subscription(
                 Odometry,
                 '/base_controller/odom',
@@ -73,59 +60,9 @@ def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, mo
                 self.lidar_status_callback,
                 10
             )
-            self.subscription_state = self.create_subscription(
-                String,
-                '/mode_state',
-                self.mode_state_callback,
-                10
-            )
             self.timer = self.create_timer(1.0, self.check_connection)
-            self.command_timer = self.create_timer(0.1, self.check_command_queue)
             self.last_msg_time = self.get_clock().now()
             print(f"[{self.robot_name}] Connection node initialized.")
-
-        
-        def check_command_queue(self):
-            while not self.command_queue.empty():
-                command = self.command_queue.get()
-                if command == 'emergency_stop':
-                    self.cancel_navigation_goal()
-                    self.emergency_stop_robot()
-
-        def cancel_navigation_goal(self):
-            self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-            if not self.nav_to_pose_client.wait_for_server(timeout_sec=1.0):
-                self.get_logger().error("NavigateToPose action server not available")
-                return
-            cancel_future = self.nav_to_pose_client.cancel_all_goals()
-            rclpy.spin_until_future_complete(self, cancel_future)
-            if cancel_future.result() is not None:
-                self.get_logger().info("All navigation goals canceled")
-            else:
-                self.get_logger().error("Failed to cancel navigation goals")
-        
-        def emergency_stop_robot(self):
-            cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-            stop_msg = Twist()
-            cmd_pub.publish(stop_msg)
-            self.get_logger().info("Emergency stop command sent.")
-
-        def mode_state_callback(self, msg):
-            mode_state = msg.data.strip()
-            parts = mode_state.split(' ', 1)
-            if len(parts) ==2:
-                robot_id_str, mode_state_str = parts
-                try:
-                    robot_id = int(robot_id_str)
-                    if robot_id == self.robot_id:
-                        self.mode_state_queue.put((self.robot_name, mode_state_str))
-                        print(f"[{self.robot_name}] Received state: {robot_id}, {mode_state_str}")
-                except ValueError:
-                    print(f"Invalid robot_id: {robot_id_str}")
-            else:
-                print(f"Invalid mode_state format: {mode_state}")
-            # self.mode_state_queue.put((self.robot_name, mode_state))
-            # print(f"[{self.robot_name}] Received state: {mode_state}")
 
         def lidar_status_callback(self, msg):
             lidar_status = msg.range
@@ -163,26 +100,9 @@ def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, mo
                 self.status_queue.put((self.robot_name, False))
 
     # 노드 생성 및 스피닝
-    node = RobotConnectionNode(robot_name, status_queue, position_queue, motor_status_queue, lidar_status_queue, mode_state_queue, command_queue)
+    node = RobotConnectionNode(robot_name, status_queue, position_queue, motor_status_queue, lidar_status_queue)
     print(f"[{robot_name} Process] Node created.")
-
-    # 종료를 위한
-    shutdown_future = rclpy.Future()
-
-    # 별도 스레드에서 shutdown_event 모니터링
-    def wait_for_shutdown():
-        shutdown_event.wait()
-        node.get_logger().info("Shutdown event received.")
-        shutdown_future.set_result(True)
-
-    shutdown_thread = threading.Thread(target=wait_for_shutdown)
-    shutdown_thread.start()
-
-    # 노드 스핀(shutdown_future가 완료되면 스핀 종료)
-    rclpy.spin_until_future_complete(node, shutdown_future)
-
-    # 종료 처리
-    shutdown_thread.join()
+    rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
 
@@ -198,6 +118,7 @@ class MainWindow(QMainWindow):
         ########################################################################
         loadJsonStyle(self, self.ui)
 
+        self.show()
         ########################################################################
         # 2:1 비율 적용 코드 추가
         layout = self.ui.centralwidget.findChild(QVBoxLayout, "verticalLayout_22")
@@ -206,18 +127,18 @@ class MainWindow(QMainWindow):
             layout.setStretch(1, 1)  # 두 번째 아이템의 stretch 값을 1로 설정
 
         ########################################################################
-        # 실시간 웹캠 영상 표시 설정
+        # frame_14에 실시간 웹캠 영상 표시 설정
         ########################################################################
-        # 기존의 QLabel인 videoLabel_TopLeft를 사용
-        self.ui.videoLabel_TopLeft.setAlignment(Qt.AlignCenter)
-        self.image_label = self.ui.videoLabel_TopLeft  # 이미 존재하는 QLabel 사용
+        # self.image_label = QLabel(self.ui.frame_14)  # QLabel 생성
+        # self.image_label.setAlignment(Qt.AlignCenter)
+        # self.ui.frame_14.layout().addWidget(self.image_label)  # frame_14에 QLabel 추가
 
-        self.cap = cv2.VideoCapture(0)  # 웹캠 열기
+        # self.cap = cv2.VideoCapture(0)  # 웹캠 열기 (0번 장치)
 
-        # QTimer 설정: 30ms마다 update_frame 호출
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(30)
+        # # QTimer 설정: 30ms마다 update_frame 호출하여 영상 업데이트
+        # self.timer = QTimer()
+        # self.timer.timeout.connect(self.update_frame)
+        # self.timer.start(30)
 
         ########################################################################
         # 메뉴 확장 및 축소 기능 설정
@@ -241,39 +162,9 @@ class MainWindow(QMainWindow):
         self.ui.closeNotificationBtn.clicked.connect(lambda: self.ui.popupNotificationContainer.collapseMenu())
 
         ########################################################################
-        # ROS2 초기화 및 퍼블리셔 설정
-        ########################################################################
-        rclpy.init(args=None)
-        self.ros_node = rclpy.create_node('gui_publisher_node')
-
-        # # Emergency Stop 퍼블리셔 생성
-        # self.emergency_publisher = self.ros_node.create_publisher(
-        #     String,
-        #     '/emergency_stop',
-        #     10
-        # )
-
-        # # Emergency stop 상태 변경 서비스 클라이언트 생성
-        # self.lifecycle_client = self.ros_node.create_client(ChangeState, '/controller_server/chage_state')
-
-        # # 비동기 방식으로 서비스 활성 대기
-        # self.check_service_timer = QTimer()
-        # self.check_service_timer.timeout.connect(self.check_service_availability)
-        # self.check_service_timer.start(1000)
-
-        # ROS2 스레드 시작
-        self.ros_thread = threading.Thread(target=rclpy.spin, args=(self.ros_node,), daemon=True)
-        self.ros_thread.start()
-
-        # Emergency 버튼 클릭 이벤트
-        self.ui.emergencyBtn_b1.clicked.connect(lambda: self.send_emergency_stop('robot1'))
-        self.ui.emergencyBtn_b2.clicked.connect(lambda: self.send_emergency_stop('robot2'))
-
-
-        ########################################################################
         # 맵 이미지 로드
         ########################################################################
-        self.map_pixmap = QPixmap('/home/jook/minibot_ws/maps/map_4th_rev08_modified_gui_rev01.pgm')
+        self.map_pixmap = QPixmap('/home/jook/minibot_ws/maps/map_4th_rev08_modified_gui.pgm')
         # self.map_pixmap = self.map_pixmap.scaled(392, 172, Qt.KeepAspectRatio)
         # self.ui.label_12.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # 원본 맵 이미지 크기 저장
@@ -284,26 +175,17 @@ class MainWindow(QMainWindow):
         self.ui.label_12.setPixmap(self.map_pixmap)
 
         # 맵 메타데이터 로드
-        with open('/home/jook/minibot_ws/maps/map_4th_rev08_modified_gui_rev01.yaml', 'r') as file:
+        with open('/home/jook/minibot_ws/maps/map_4th_rev08_modified_gui.yaml', 'r') as file:
             map_metadata = yaml.safe_load(file)
         self.resolution = map_metadata['resolution']
         self.origin = map_metadata['origin']
 
-        self.show()
         ########################################################################
         # 각 로봇 이름과 ID, 인디케이터 레이블 딕셔너리 정의
         ########################################################################
         self.robot_info = {
-            'robot1': {
-                'robot_id': 63, 
-                'label' : [self.ui.label_status_b1, self.ui.label_mt_b1, self.ui.label_li_b1],
-                'mode_state_label': self.ui.label_mode_state_b1
-            },
-            'robot2': {
-                'robot_id': 77,
-                'label' : [self.ui.label_status_b2, self.ui.label_mt_b2, self.ui.label_li_b2],
-                'mode_state_label': self.ui.label_mode_state_b2
-            }
+            'robot1': {'domain_id': 63, 'label' : [self.ui.label_status_b1, self.ui.label_mt_b1, self.ui.label_li_b1]},
+            'robot2': {'domain_id': 77, 'label' : [self.ui.label_status_b2, self.ui.label_mt_b2, self.ui.label_li_b2]}
         }
 
         # 상태 큐 및 위치 큐 생성
@@ -311,26 +193,17 @@ class MainWindow(QMainWindow):
         self.position_queue = multiprocessing.Queue()
         self.motor_status_queue = multiprocessing.Queue()
         self.lidar_status_queue = multiprocessing.Queue()
-        self.mode_state_queue = multiprocessing.Queue()
-        self.command_queues = {}    # 각 로봇에 대한 커맨드 큐 딕셔너리
 
         # 로봇 위치를 저자할 딕셔너리 초기화
         self.robot_positions = {}
 
-        # 종료 이벤트 생성
-        self.shutdown_event = multiprocessing.Event()
-
         # 프로세스 생성 및 시작
         self.processes = []
         for robot_name, info in self.robot_info.items():
-            print(f"Starting process for {robot_name} with domain ID {info['robot_id']}")
-            command_queue = multiprocessing.Queue()  # 각 로봇에 대한 커맨드 큐 생성
-            self.command_queues[robot_name] = command_queue     # 커맨드 큐 저장
+            print(f"Starting process for {robot_name} with domain ID {info['domain_id']}")
             p = multiprocessing.Process(
                 target=robot_monitor_process,
-                args=(robot_name, info['robot_id'], self.status_queue, self.position_queue, 
-                      self.motor_status_queue, self.lidar_status_queue, self.mode_state_queue, 
-                      self.shutdown_event, command_queue),
+                args=(robot_name, info['domain_id'], self.status_queue, self.position_queue, self.motor_status_queue, self.lidar_status_queue),
                 daemon=True)
             p.start()
             self.processes.append(p)
@@ -354,59 +227,6 @@ class MainWindow(QMainWindow):
         self.lidar_status_timer = QTimer()
         self.lidar_status_timer.timeout.connect(self.check_lidar_status_queue)
         self.lidar_status_timer.start(100)
-
-        # 모드 상태 업데이트 타이머 설정
-        self.mode_state_timer = QTimer()
-        self.mode_state_timer.timeout.connect(self.check_mode_state_queue)
-        self.mode_state_timer.start(100)
-
-    def update_frame(self):
-        ret, frame = self.cap.read()
-        if ret:
-            # 프레임을 RGB로 변환
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # 이미지를 QImage로 변환
-            h, w, ch = frame.shape
-            bytes_per_line = ch * w
-            qt_image = QtGui.QImage(frame.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-            # 이미지 설정
-            self.image_label.setPixmap(QtGui.QPixmap.fromImage(qt_image))
-        else:
-            print("Failed to grab frame from webcam.")
-
-
-    def send_emergency_stop(self, robot_name):
-        if robot_name in self.command_queues:
-            self.command_queues[robot_name].put('emergency_stop')   # 커맨드 큐에 명령 추가
-            print(f"Sent emergency stop command to {robot_name}")
-            self.ui.popupNotificationContainer.expandMenu()
-            self.ui.label_13.setText(f"Emergency stop {robot_name} (ID: {self.robot_info[robot_name]['robot_id']})")
-        else:
-            print(f"Unknown robot: {robot_name}")
-
-    def check_mode_state_queue(self):
-        while not self.mode_state_queue.empty():
-            robot_name, mode_state = self.mode_state_queue.get()
-            # robot_name = self.get_robot_name_by_id(robot_id)
-            if robot_name in self.robot_info:
-                print(f"[Main Process] received mode state from {robot_name}: {mode_state}")
-                self.on_mode_state_updated(robot_name, mode_state)
-            else:
-                print(f"Unknown robot ID: {robot_name}")
-    
-    def on_mode_state_updated(self, robot_name, state):
-        if robot_name in self.robot_info:
-            mode_state_label = self.robot_info[robot_name]['mode_state_label']
-            font = mode_state_label.font()
-            font.setBold(True)
-            mode_state_label.setFont(font)
-            display_state = state.replace('_', ' ')
-            mode_state_label.setText(f"{display_state}")
-            self.ui.popupNotificationContainer.expandMenu()
-            self.ui.label_13.setText(f"{robot_name}'s mode is {display_state}")
-        else:
-            print(f"Unknown robot: {robot_name}")
-
 
     def check_lidar_status_queue(self):
         while not self.lidar_status_queue.empty():
@@ -494,51 +314,6 @@ class MainWindow(QMainWindow):
 
         return map_x, map_y
 
-    # def draw_robot(self):
-    #     # 현재 label_12의 크기 가져오기
-    #     label_width = self.ui.label_12.width()
-    #     label_height = self.ui.label_12.height()
-
-    #     # 맵 이미지를 label_12의 크기에 맞게 스케일링
-    #     scaled_map = self.map_pixmap.scaled(label_width, label_height, Qt.KeepAspectRatio)
-
-    #     # 로봇 위치 그리기
-    #     updated_map = scaled_map.copy()
-
-    #     # QPainter 객체 생성
-    #     painter = QtGui.QPainter()
-    #     # QPainter 시작
-    #     painter.begin(updated_map)
-
-    #     for robot_name, (x, y) in self.robot_positions.items():
-    #         # 로봇 색상 설정 (원하는 대로 변경 가능)
-    #         if robot_name == 'robot1':
-    #             color = QColor(255, 0, 0)  # 빨간색
-    #         elif robot_name == 'robot2':
-    #             color = QColor(0, 255, 0)  # 초록색
-    #         elif robot_name == 'robot3':
-    #             color = QColor(0, 0, 255)  # 파란색
-    #         else:
-    #             color = QColor(0, 0, 0)  # 검은색
-
-    #         pen = QPen(color)
-    #         brush = QBrush(color)
-    #         painter.setPen(pen)
-    #         painter.setBrush(brush)
-
-    #         # 월드 좌표를 맵 이미지의 픽셀 좌표로 변환
-    #         map_x, map_y = self.world_to_map(x, y, updated_map.width(), updated_map.height())
-    #         print(f'Drawing {robot_name} at map coordinates: x={map_x}, y={map_y}')
-
-    #         robot_radius = 5  # 필요에 따라 조절
-    #         painter.drawEllipse(map_x - robot_radius, map_y - robot_radius, robot_radius * 2, robot_radius * 2)
-    #         print(f"Robot {robot_name} drawn")
-
-    #     painter.end()
-
-    #     # 업데이트된 이미지를 label_12에 설정
-    #     self.ui.label_12.setPixmap(updated_map)
-
     def draw_robot(self):
         # 현재 label_12의 크기 가져오기
         label_width = self.ui.label_12.width()
@@ -552,37 +327,34 @@ class MainWindow(QMainWindow):
 
         # QPainter 객체 생성
         painter = QtGui.QPainter()
-        try:
-            # QPainter 시작
-            painter.begin(updated_map)
+        # QPainter 시작
+        painter.begin(updated_map)
 
-            for robot_name, (x, y) in self.robot_positions.items():
-                # 로봇 색상 설정 (원하는 대로 변경 가능)
-                if robot_name == 'robot1':
-                    color = QColor(255, 0, 0)  # 빨간색
-                elif robot_name == 'robot2':
-                    color = QColor(0, 255, 0)  # 초록색
-                elif robot_name == 'robot3':
-                    color = QColor(0, 0, 255)  # 파란색
-                else:
-                    color = QColor(0, 0, 0)  # 검은색
+        for robot_name, (x, y) in self.robot_positions.items():
+            # 로봇 색상 설정 (원하는 대로 변경 가능)
+            if robot_name == 'robot1':
+                color = QColor(255, 0, 0)  # 빨간색
+            elif robot_name == 'robot2':
+                color = QColor(0, 255, 0)  # 초록색
+            elif robot_name == 'robot3':
+                color = QColor(0, 0, 255)  # 파란색
+            else:
+                color = QColor(0, 0, 0)  # 검은색
 
-                pen = QPen(color)
-                brush = QBrush(color)
-                painter.setPen(pen)
-                painter.setBrush(brush)
+            pen = QPen(color)
+            brush = QBrush(color)
+            painter.setPen(pen)
+            painter.setBrush(brush)
 
-                # 월드 좌표를 맵 이미지의 픽셀 좌표로 변환
-                map_x, map_y = self.world_to_map(x, y, updated_map.width(), updated_map.height())
-                print(f'Drawing {robot_name} at map coordinates: x={map_x}, y={map_y}')
+            # 월드 좌표를 맵 이미지의 픽셀 좌표로 변환
+            map_x, map_y = self.world_to_map(x, y, updated_map.width(), updated_map.height())
+            print(f'Drawing {robot_name} at map coordinates: x={map_x}, y={map_y}')
 
-                robot_radius = 5  # 필요에 따라 조절
-                painter.drawEllipse(map_x - robot_radius, map_y - robot_radius, robot_radius * 2, robot_radius * 2)
-                print(f"Robot {robot_name} drawn")
-        except Exception as e:
-            print(f"Exception occurred while drawing robots: {e}")
-        finally:
-            painter.end()
+            robot_radius = 5  # 필요에 따라 조절
+            painter.drawEllipse(map_x - robot_radius, map_y - robot_radius, robot_radius * 2, robot_radius * 2)
+            print(f"Robot {robot_name} drawn")
+
+        painter.end()
 
         # 업데이트된 이미지를 label_12에 설정
         self.ui.label_12.setPixmap(updated_map)
@@ -592,31 +364,20 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).resizeEvent(event)
 
     def closeEvent(self, event):
+        # 프로세스 종료
+        for p in self.processes:
+            p.terminate()
         # 타이머 중지
+        # self.ros_node.destroy_node()
+        # rclpy.shutdown()
         self.status_timer.stop()
         self.position_timer.stop()
         self.motor_status_timer.stop()
         self.lidar_status_timer.stop()
-        self.mode_state_timer.stop()
-
-        # 종료 이벤트 설정
-        self.shutdown_event.set()
-
-        # 프로세스 종료
-        for p in self.processes:
-            p.join(timeout=2)
-
-
-        # ROS2 노드 종료
-        self.ros_node.destroy_node()
-        rclpy.shutdown()
-        self.ros_thread.join()
-
         event.accept()
 
 # Execute App
 if __name__ == "__main__":
-    multiprocessing.set_start_method('spawn')
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec_())

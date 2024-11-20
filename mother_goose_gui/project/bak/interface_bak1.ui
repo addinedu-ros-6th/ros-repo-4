@@ -58,15 +58,10 @@
 	background-color: gray;
 }
 
-#frame_mt_b1, #frame_li_b1, #frame_mt_b2, #frame_li_b2, #frame_mt_b3, #frame_li_b3, #frame_mt_b4, #frame_li_b4, #frame_mode_state_b1, #frame_mode_state_b2, #frame_mode_state_b3, #frame_mode_state_b4
+#frame_mt_b1, #frame_li_b1, #frame_mt_b2, #frame_li_b2, #frame_mt_b3, #frame_li_b3, #frame_mt_b4, #frame_li_b4
 {
 	background-color: #FFFFFF;
 	border-radius: 10px;
-}
-
-#label_18, #label_10
-{
-	color: rgb(255,0,0);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -242,6 +237,46 @@
                <property name="icon">
                 <iconset resource="resources.qrc">
                  <normaloff>:/icons/icons/blueIcons/monitor.svg</normaloff>:/icons/icons/blueIcons/monitor.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="dataBtn">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Data Storage&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Data Analysis</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/blueIcons/list.svg</normaloff>:/icons/icons/blueIcons/list.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="reviewBtn">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Play Recorded Files&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Video</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/icons/icons/blueIcons/play.svg</normaloff>:/icons/icons/blueIcons/play.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -484,7 +519,7 @@
           <item>
            <widget class="QCustomStackedWidget" name="centerMenuPages">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="page">
              <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -871,7 +906,7 @@ p, li { white-space: pre-wrap; }
              <item>
               <widget class="QCustomStackedWidget" name="mainPages">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_6">
                 <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -1147,9 +1182,6 @@ p, li { white-space: pre-wrap; }
                                    <property name="spacing">
                                     <number>6</number>
                                    </property>
-                                   <property name="topMargin">
-                                    <number>4</number>
-                                   </property>
                                    <property name="bottomMargin">
                                     <number>9</number>
                                    </property>
@@ -1183,7 +1215,7 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/engine-motor.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/motor.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>true</bool>
@@ -1244,59 +1276,10 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/radio.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/radio.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>false</bool>
-                                     </property>
-                                    </widget>
-                                   </item>
-                                  </layout>
-                                 </widget>
-                                </item>
-                                <item>
-                                 <widget class="QFrame" name="frame_mode_state_b1">
-                                  <property name="minimumSize">
-                                   <size>
-                                    <width>0</width>
-                                    <height>22</height>
-                                   </size>
-                                  </property>
-                                  <property name="frameShape">
-                                   <enum>QFrame::StyledPanel</enum>
-                                  </property>
-                                  <property name="frameShadow">
-                                   <enum>QFrame::Raised</enum>
-                                  </property>
-                                  <layout class="QVBoxLayout" name="verticalLayout_17">
-                                   <property name="spacing">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="leftMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="topMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="rightMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="bottomMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <item>
-                                    <widget class="QLabel" name="label_mode_state_b1">
-                                     <property name="minimumSize">
-                                      <size>
-                                       <width>0</width>
-                                       <height>22</height>
-                                      </size>
-                                     </property>
-                                     <property name="text">
-                                      <string/>
-                                     </property>
-                                     <property name="alignment">
-                                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                                      </property>
                                     </widget>
                                    </item>
@@ -1490,9 +1473,6 @@ p, li { white-space: pre-wrap; }
                                    <enum>QFrame::Raised</enum>
                                   </property>
                                   <layout class="QHBoxLayout" name="horizontalLayout_29">
-                                   <property name="topMargin">
-                                    <number>4</number>
-                                   </property>
                                    <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
                                     <widget class="QLabel" name="label_26">
                                      <property name="font">
@@ -1523,7 +1503,7 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/engine-motor.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/motor.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>true</bool>
@@ -1584,59 +1564,10 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/radio.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/radio.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>false</bool>
-                                     </property>
-                                    </widget>
-                                   </item>
-                                  </layout>
-                                 </widget>
-                                </item>
-                                <item>
-                                 <widget class="QFrame" name="frame_mode_state_b2">
-                                  <property name="minimumSize">
-                                   <size>
-                                    <width>0</width>
-                                    <height>22</height>
-                                   </size>
-                                  </property>
-                                  <property name="frameShape">
-                                   <enum>QFrame::StyledPanel</enum>
-                                  </property>
-                                  <property name="frameShadow">
-                                   <enum>QFrame::Raised</enum>
-                                  </property>
-                                  <layout class="QVBoxLayout" name="verticalLayout_21">
-                                   <property name="spacing">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="leftMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="topMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="rightMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <property name="bottomMargin">
-                                    <number>0</number>
-                                   </property>
-                                   <item>
-                                    <widget class="QLabel" name="label_mode_state_b2">
-                                     <property name="minimumSize">
-                                      <size>
-                                       <width>0</width>
-                                       <height>22</height>
-                                      </size>
-                                     </property>
-                                     <property name="text">
-                                      <string/>
-                                     </property>
-                                     <property name="alignment">
-                                      <set>Qt::AlignCenter</set>
                                      </property>
                                     </widget>
                                    </item>
@@ -1830,9 +1761,6 @@ p, li { white-space: pre-wrap; }
                                    <enum>QFrame::Raised</enum>
                                   </property>
                                   <layout class="QHBoxLayout" name="horizontalLayout_31">
-                                   <property name="topMargin">
-                                    <number>4</number>
-                                   </property>
                                    <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
                                     <widget class="QLabel" name="label_27">
                                      <property name="font">
@@ -1863,7 +1791,7 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/engine-motor.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/motor.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>true</bool>
@@ -1924,41 +1852,10 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/radio.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/radio.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>false</bool>
-                                     </property>
-                                    </widget>
-                                   </item>
-                                  </layout>
-                                 </widget>
-                                </item>
-                                <item>
-                                 <widget class="QFrame" name="frame_mode_state_b3">
-                                  <property name="minimumSize">
-                                   <size>
-                                    <width>0</width>
-                                    <height>22</height>
-                                   </size>
-                                  </property>
-                                  <property name="frameShape">
-                                   <enum>QFrame::StyledPanel</enum>
-                                  </property>
-                                  <property name="frameShadow">
-                                   <enum>QFrame::Raised</enum>
-                                  </property>
-                                  <layout class="QVBoxLayout" name="verticalLayout_25">
-                                   <item>
-                                    <widget class="QLabel" name="label_mode_state_b3">
-                                     <property name="minimumSize">
-                                      <size>
-                                       <width>0</width>
-                                       <height>22</height>
-                                      </size>
-                                     </property>
-                                     <property name="text">
-                                      <string/>
                                      </property>
                                     </widget>
                                    </item>
@@ -2152,9 +2049,6 @@ p, li { white-space: pre-wrap; }
                                    <enum>QFrame::Raised</enum>
                                   </property>
                                   <layout class="QHBoxLayout" name="horizontalLayout_33">
-                                   <property name="topMargin">
-                                    <number>4</number>
-                                   </property>
                                    <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
                                     <widget class="QLabel" name="label_31">
                                      <property name="font">
@@ -2185,7 +2079,7 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/engine-motor.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/motor.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>true</bool>
@@ -2246,41 +2140,10 @@ p, li { white-space: pre-wrap; }
                                       <string/>
                                      </property>
                                      <property name="pixmap">
-                                      <pixmap resource="resources.qrc">:/icons/icons/whiteIcons/radio.svg</pixmap>
+                                      <pixmap resource="resources.qrc">:/icons/icons/blueIcons/radio.svg</pixmap>
                                      </property>
                                      <property name="scaledContents">
                                       <bool>false</bool>
-                                     </property>
-                                    </widget>
-                                   </item>
-                                  </layout>
-                                 </widget>
-                                </item>
-                                <item>
-                                 <widget class="QFrame" name="frame_mode_state_b4">
-                                  <property name="minimumSize">
-                                   <size>
-                                    <width>0</width>
-                                    <height>22</height>
-                                   </size>
-                                  </property>
-                                  <property name="frameShape">
-                                   <enum>QFrame::StyledPanel</enum>
-                                  </property>
-                                  <property name="frameShadow">
-                                   <enum>QFrame::Raised</enum>
-                                  </property>
-                                  <layout class="QVBoxLayout" name="verticalLayout_36">
-                                   <item>
-                                    <widget class="QLabel" name="label_mode_state_b4">
-                                     <property name="minimumSize">
-                                      <size>
-                                       <width>0</width>
-                                       <height>22</height>
-                                      </size>
-                                     </property>
-                                     <property name="text">
-                                      <string/>
                                      </property>
                                     </widget>
                                    </item>
@@ -2300,6 +2163,25 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                    </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_7">
+                <layout class="QVBoxLayout" name="verticalLayout_17">
+                 <item>
+                  <widget class="QLabel" name="label_11">
+                   <property name="font">
+                    <font>
+                     <pointsize>13</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Data Storage</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -2350,7 +2232,7 @@ p, li { white-space: pre-wrap; }
                       <string>background-color: #D3D3D3;</string>
                      </property>
                      <property name="text">
-                      <string>Baby Goose1 Video_front</string>
+                      <string>Video 1</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -2369,7 +2251,7 @@ p, li { white-space: pre-wrap; }
                       <string>background-color: #D3D3D3;</string>
                      </property>
                      <property name="text">
-                      <string>Baby Goose1 Video_rear</string>
+                      <string>Video 2</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -2388,7 +2270,7 @@ p, li { white-space: pre-wrap; }
                       <string>background-color: #D3D3D3;</string>
                      </property>
                      <property name="text">
-                      <string>Baby Goose2 Video_front</string>
+                      <string>Empty</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -2407,7 +2289,7 @@ p, li { white-space: pre-wrap; }
                       <string>background-color: #D3D3D3;</string>
                      </property>
                      <property name="text">
-                      <string>Baby Goose2 Video_rear</string>
+                      <string>Empty</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -2416,7 +2298,7 @@ p, li { white-space: pre-wrap; }
                    </item>
                   </layout>
                  </item>
-                 <item alignment="Qt::AlignHCenter">
+                 <item>
                   <widget class="QFrame" name="frame_16">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2443,7 +2325,7 @@ p, li { white-space: pre-wrap; }
                     <property name="bottomMargin">
                      <number>0</number>
                     </property>
-                    <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+                    <item alignment="Qt::AlignRight|Qt::AlignVCenter">
                      <widget class="QFrame" name="frame_17">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -2475,45 +2357,189 @@ p, li { white-space: pre-wrap; }
                          <property name="spacing">
                           <number>0</number>
                          </property>
-                         <item row="0" column="2">
-                          <widget class="QLabel" name="label_16">
+                         <item row="0" column="1">
+                          <widget class="QLabel" name="label_10">
                            <property name="font">
                             <font>
-                             <pointsize>10</pointsize>
                              <weight>75</weight>
                              <bold>true</bold>
                             </font>
                            </property>
                            <property name="text">
-                            <string>Baby Goose2</string>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignCenter</set>
+                            <string>Cam Manual</string>
                            </property>
                           </widget>
                          </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_18">
-                           <property name="font">
-                            <font>
-                             <pointsize>10</pointsize>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
+                         <item row="1" column="3" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+                          <widget class="QPushButton" name="pushButton_2">
                            <property name="text">
-                            <string>Emergency Stop</string>
+                            <string/>
                            </property>
-                           <property name="alignment">
-                            <set>Qt::AlignCenter</set>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/arrow-up-circle.svg</normaloff>:/icons/icons/blueIcons/arrow-up-circle.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                           <property name="default">
+                            <bool>true</bool>
                            </property>
                           </widget>
                          </item>
-                         <item row="2" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-                          <widget class="QPushButton" name="emergencyBtn_b1">
-                           <property name="cursor">
-                            <cursorShape>PointingHandCursor</cursorShape>
+                         <item row="2" column="3" alignment="Qt::AlignHCenter|Qt::AlignTop">
+                          <widget class="QPushButton" name="pushButton">
+                           <property name="text">
+                            <string/>
                            </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/arrow-down-circle.svg</normaloff>:/icons/icons/blueIcons/arrow-down-circle.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                           <property name="default">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="5" alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                          <widget class="QPushButton" name="pushButton_5">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/plus-square.svg</normaloff>:/icons/icons/blueIcons/plus-square.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="2" alignment="Qt::AlignRight|Qt::AlignTop">
+                          <widget class="QPushButton" name="pushButton_4">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/arrow-left-circle.svg</normaloff>:/icons/icons/blueIcons/arrow-left-circle.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                           <property name="default">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="4" alignment="Qt::AlignLeft|Qt::AlignTop">
+                          <widget class="QPushButton" name="pushButton_3">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/arrow-right-circle.svg</normaloff>:/icons/icons/blueIcons/arrow-right-circle.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                           <property name="default">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QPushButton" name="pushButton_8">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/whiteIcons/on-rounded.svg</normaloff>
+                             <normalon>:/icons_orange/icons/orangIcons/on-rounded-clicked.svg</normalon>:/icons/icons/whiteIcons/on-rounded.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>35</width>
+                             <height>35</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="1">
+                          <widget class="QPushButton" name="pushButton_7">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/whiteIcons/off-rounded.svg</normaloff>
+                             <normalon>:/icons_orange/icons/orangIcons/off-rounded-clicked.svg</normalon>:/icons/icons/whiteIcons/off-rounded.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>35</width>
+                             <height>35</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="5" alignment="Qt::AlignLeft|Qt::AlignTop">
+                          <widget class="QPushButton" name="pushButton_6">
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset resource="resources.qrc">
+                             <normaloff>:/icons/icons/blueIcons/minus-square.svg</normaloff>:/icons/icons/blueIcons/minus-square.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>30</width>
+                             <height>30</height>
+                            </size>
+                           </property>
+                           <property name="autoRepeat">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="0">
+                          <widget class="QPushButton" name="pushButton_12">
                            <property name="toolTip">
                             <string>Manual Moving Stop</string>
                            </property>
@@ -2532,8 +2558,8 @@ p, li { white-space: pre-wrap; }
                            </property>
                           </widget>
                          </item>
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_11">
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="label_18">
                            <property name="font">
                             <font>
                              <pointsize>10</pointsize>
@@ -2542,63 +2568,281 @@ p, li { white-space: pre-wrap; }
                             </font>
                            </property>
                            <property name="text">
-                            <string>Baby Goose1</string>
+                            <string>Moving Stop</string>
                            </property>
                            <property name="alignment">
                             <set>Qt::AlignCenter</set>
                            </property>
                           </widget>
                          </item>
-                         <item row="1" column="2">
-                          <widget class="QLabel" name="label_10">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_19">
                            <property name="font">
                             <font>
-                             <pointsize>10</pointsize>
                              <weight>75</weight>
                              <bold>true</bold>
                             </font>
                            </property>
                            <property name="text">
-                            <string>Emergency Stop</string>
+                            <string>Manual</string>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignCenter</set>
                            </property>
                           </widget>
-                         </item>
-                         <item row="2" column="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-                          <widget class="QPushButton" name="emergencyBtn_b2">
-                           <property name="cursor">
-                            <cursorShape>PointingHandCursor</cursorShape>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                           <property name="icon">
-                            <iconset resource="resources.qrc">
-                             <normaloff>:/icons/icons/blueIcons/stop-circle.svg</normaloff>:/icons/icons/blueIcons/stop-circle.svg</iconset>
-                           </property>
-                           <property name="iconSize">
-                            <size>
-                             <width>35</width>
-                             <height>35</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <spacer name="horizontalSpacer_2">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>60</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </spacer>
                          </item>
                         </layout>
                        </item>
                       </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="frame_19">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_25">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item alignment="Qt::AlignTop">
+                        <widget class="QLabel" name="label_17">
+                         <property name="font">
+                          <font>
+                           <weight>75</weight>
+                           <bold>true</bold>
+                          </font>
+                         </property>
+                         <property name="text">
+                          <string>Water toggle</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_9">
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="resources.qrc">
+                           <normaloff>:/icons/icons/whiteIcons/on-rounded.svg</normaloff>
+                           <normalon>:/icons_orange/icons/orangIcons/on-rounded-clicked.svg</normalon>:/icons/icons/whiteIcons/on-rounded.svg</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>35</width>
+                           <height>35</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_10">
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="resources.qrc">
+                           <normaloff>:/icons/icons/whiteIcons/off-rounded.svg</normaloff>
+                           <normalon>:/icons_orange/icons/orangIcons/off-rounded-clicked.svg</normalon>:/icons/icons/whiteIcons/off-rounded.svg</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>35</width>
+                           <height>35</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_9">
+                <layout class="QVBoxLayout" name="verticalLayout_21">
+                 <item>
+                  <widget class="QFrame" name="frame_11">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_13">
+                    <item>
+                     <widget class="QLabel" name="label_16">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>Input signal</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+                  <widget class="QFrame" name="frame_12">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <property name="spacing">
+                     <number>10</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>100</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>100</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="playBtn">
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/play-circle.svg</normaloff>:/icons/icons/blueIcons/play-circle.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pauseBtn">
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/pause-circle.svg</normaloff>:/icons/icons/blueIcons/pause-circle.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="stopBtn">
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/stop-circle.svg</normaloff>:/icons/icons/blueIcons/stop-circle.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="zoomInBtn">
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/zoom-in.svg</normaloff>:/icons/icons/blueIcons/zoom-in.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="zoomOutBtn">
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/zoom-out.svg</normaloff>:/icons/icons/blueIcons/zoom-out.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_11">
+                      <property name="toolTip">
+                       <string>Open file</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/blueIcons/file-plus.svg</normaloff>:/icons/icons/blueIcons/file-plus.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -2919,6 +3163,7 @@ p, li { white-space: pre-wrap; }
  </customwidgets>
  <resources>
   <include location="resources.qrc"/>
+  <include location="../../../../.designer/backup/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

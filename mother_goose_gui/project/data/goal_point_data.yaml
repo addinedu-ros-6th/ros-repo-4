@@ -1,0 +1,25 @@
+goal_points:
+  - id: 1
+    spot_name : base_station1
+    point: {x: 0.0, y: 0.0, z: 0.0}
+  - id: 2
+    point: {x: 0.0, y: 1.1090797185897827, z: 0.0}
+    spot_name : base_station2
+  - id: 3
+    point: {x: 0.9694105386734009, y: 0.0, z: 0.002471923828125}
+    spot_name : toilet
+  - id: 4
+    point: {x: 1.3098362684249878, y: 1.1090797185897827, z: -0.001434326171875}
+    spot_name : duty_free_pickup
+  - id: 5
+    point: {x: 2.07734751701355, y: 0.0, z: -0.001434326171875}
+    spot_name : cafeteria
+  - id: 6
+    spot_name : duty_free_store
+    point: {x: 2.1715259552001953, y: 1.1090797185897827, z: 0.002471923828125}
+  - id: 7
+    spot_name : gate_k17
+    point: {x: 3.280921220779419, y: 0.0, z: 0.0}
+  - id: 8
+    spot_name : gate_k18
+    point: {x: 3.280921220779419, y: 1.1090797185897827, z: 0.0}
