@@ -1,6 +1,8 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
+import mysql.connector
+from fastapi.templating import Jinja2Templates
 
 from routers import pages, api, websockets
 from state.shared_state import session_data, send_msg_q, recv_msg_q, TEMP_ROBOT_ID
@@ -16,6 +18,7 @@ GOOGEESE_GUI_PORT = 8889
 # Initialize FastAPI app
 app = FastAPI()
 
+
 # Mount static directories
 app.mount("/css", StaticFiles(directory="css"), name="css")
 app.mount("/js", StaticFiles(directory="js"), name="js")
@@ -30,6 +33,8 @@ except Exception as e:
 app.include_router(pages.router)
 app.include_router(api.router)
 app.include_router(websockets.router)
+
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

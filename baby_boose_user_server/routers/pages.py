@@ -7,9 +7,25 @@ from fastapi.templating import Jinja2Templates
 from state.shared_state import session_data, send_msg_q, TEMP_ROBOT_ID, GATE
 from utils.helpers import get_user_id
 import os
+import mysql.connector
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+
+
+DB_CONFIG = {
+    "host" : "127.0.0.1",
+    "user" : "no_password_user",
+    "password" : "",
+    "database" : "googeese",
+}
+def get_db_connection():
+    """Establish a database connection."""
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        return conn
+    except mysql.connector.Error as err:
+        raise HTTPException(status_code=500, detail=f"Database connection failed: {err}")
 
 # 시작 화면 start.html
 # uvicorn main:app --reload
@@ -56,21 +72,54 @@ async def read_ticket_scan(request: Request):
 
 @router.get("/confirmation", response_class=HTMLResponse)
 async def read_confirmation(request: Request):
+    """
+    Fetch QR information, save to DB, and render confirmation page.
+    """
     user_id = get_user_id(request)
-    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state" : "confirmation"})
+    send_msg_q.put({"robot_id": session_data[user_id]["robot_id"], "state": "confirmation"})
 
+    # Extract ticket information from session_data
     ticket = session_data.get("ticket", {})
+    name = ticket.get("name", "N/A")
+    passport = ticket.get("passport", "N/A")
+    flight_number = ticket.get("flight number", "N/A")
+    from_location = ticket.get("from", "N/A")
+    to_location = ticket.get("to", "N/A")
+    gate = ticket.get("gate", "N/A")
+    boarding_time = ticket.get("boarding time", "N/A")
+    seat = ticket.get("seat", "N/A")
 
+    # Save ticket information to the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO user_info (name, passport, flight_number, `from`, `to`, gate, boarding_time, seat)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (name, passport, flight_number, from_location, to_location, gate, boarding_time, seat),
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to save QR data: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Pass data to the confirmation template
     context = {
         "request": request,
         "image_name": user_id,
-        "user_name": ticket.get("name", "N/A"),
-        "flight_no": ticket.get("flight number", "N/A"),
-        "gate": ticket.get("gate", "N/A"),
-        "boarding_time": ticket.get("boarding time", "N/A")
+        "user_name": name,
+        "flight_no": flight_number,
+        "gate": gate,
+        "boarding_time": boarding_time,
     }
 
     return templates.TemplateResponse("confirmation.html", context)
+
 
 @router.get("/loading", response_class=HTMLResponse)
 async def read_cargo_open(request: Request):
