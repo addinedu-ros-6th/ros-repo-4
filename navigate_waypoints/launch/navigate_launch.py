@@ -13,8 +13,8 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='navigate_waypoints',
-            executable='navigate_with_waypoints',
-            name='navigate_with_waypoints',
+            executable='navigate_with_waypoints',  # 실행 파일 이름
+            name='navigate_with_waypoints_node',
             output='screen',
             arguments=[yaml_file]  # 명령줄 인수로 yaml_path 전달
         )

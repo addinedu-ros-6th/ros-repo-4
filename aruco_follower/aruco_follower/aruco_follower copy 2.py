@@ -110,7 +110,7 @@ class MoveTowardsMarker(py_trees.behaviour.Behaviour):
         self.node = node
         self.shared_state = shared_state
         self.publisher = self.node.create_publisher(Twist, '/base_controller/cmd_vel_unstamped', 10)
-        self.desired_distance = 0.15  # 목표 거리 18cm
+        self.desired_distance = 0.18  # 목표 거리 18cm
         self.distance_tolerance = 0.02  # 거리 허용 오차 ±2cm
         self.tolerance = 0.025  # 중심에서의 허용 오차 설정
 
@@ -154,7 +154,7 @@ class ReverseAndAdjustOrientation(py_trees.behaviour.Behaviour):
         self.publisher = self.node.create_publisher(Twist, '/base_controller/cmd_vel_unstamped', 10)
         self.state = 'initial'
         self.start_time = None
-        self.reverse_duration = 3.8  # 후진 시간 (초)
+        self.reverse_duration = 3.5  # 후진 시간 (초)
         self.yaw_tolerance = 0.4  # 허용되는 Yaw 각도 오차 (도)
         self.desired_distance = 0.18  # 목표 거리 (MoveTowardsMarker와 동일)
         self.distance_tolerance = 0.02  # 거리 허용 오차
@@ -556,7 +556,7 @@ class BehaviorTreeNode(Node):
 
         # 패키지 공유 디렉토리 경로 가져오기
         pkg_share = get_package_share_directory('aruco_follower')  # 패키지 이름 확인
-        calibration_path = os.path.join(pkg_share, 'calibration', 'calibration_minibot5.pkl')
+        calibration_path = os.path.join(pkg_share, 'calibration', 'calibration_minibot25.pkl')
 
         # 캘리브레이션 데이터 로드
         try:

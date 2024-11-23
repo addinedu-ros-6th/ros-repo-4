@@ -109,7 +109,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # YAML 파일 경로 직접 지정
-    yaml_path = '/home/sehyung/minibot_ws/src/pinklab_minibot_robot/navigate_waypoints/navigate_waypoints/points.yaml'  # YAML 파일 경로 직접 지정
+    yaml_path = '/home/sehyung/minibot_ws/src/navigate_waypoints/navigate_waypoints/points.yaml'  # YAML 파일 경로 직접 지정
     node = NavigateTree(yaml_path=yaml_path)  # NavigateTree 노드 생성
     rclpy.spin(node)  # 노드 실행
     node.destroy_node()  # 노드 종료 시 삭제
