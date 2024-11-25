@@ -1,0 +1,23 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/jook/rmf_ws/install/rmf_demos_tasks/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_panel/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_fleet_adapter/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_bridges/lib/python3.10/site-packages",
+        "/home/jook/minibot_ws/install/minibot_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/jook/rmf_ws/install/rmf_demos_tasks/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_panel/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_fleet_adapter/lib/python3.10/site-packages",
+        "/home/jook/rmf_ws/install/rmf_demos_bridges/lib/python3.10/site-packages",
+        "/home/jook/minibot_ws/install/minibot_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "cmake.ignoreCMakeListsMissing": true
+}
