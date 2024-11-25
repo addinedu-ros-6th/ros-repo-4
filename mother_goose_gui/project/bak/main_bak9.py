@@ -21,7 +21,7 @@ from std_msgs.msg import String
 from minibot_interfaces.msg import RobotState
 from nav2_msgs.action import NavigateToPose
 from action_msgs.msg import GoalInfo
-from action_msgs.srv import CancelGoals
+from action_msgs.srv import CancelGoal
 from udp_connection import *
 import queue
 
@@ -98,13 +98,13 @@ def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, mo
 
         def cancel_navigation_goal(self):
             # CancelGoal 서비스 클라이언트 생성
-            cancel_client = self.create_client(CancelGoals, 'navigate_to_pose/_action/cancel_goal')
+            cancel_client = self.create_client(CancelGoal, 'navigate_to_pose/_action/cancel_goal')
             if not cancel_client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().error("CancelGoal service not available")
                 return
 
             # CancelGoal 요청 생성 (빈 goal_info로 모든 목표 취소)
-            request = CancelGoals.Request()
+            request = CancelGoal.Request()
             request.goal_info = GoalInfo()  # goal_id와 stamp를 비워서 모든 목표 취소
 
             # 취소 요청 보내기

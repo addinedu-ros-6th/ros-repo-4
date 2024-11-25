@@ -20,8 +20,6 @@ from std_msgs.msg import Bool
 from std_msgs.msg import String
 from minibot_interfaces.msg import RobotState
 from nav2_msgs.action import NavigateToPose
-from action_msgs.msg import GoalInfo
-from action_msgs.srv import CancelGoals
 from udp_connection import *
 import queue
 
@@ -97,25 +95,18 @@ def robot_monitor_process(robot_name, robot_id, status_queue, position_queue, mo
                     self.emergency_stop_robot()
 
         def cancel_navigation_goal(self):
-            # CancelGoal 서비스 클라이언트 생성
-            cancel_client = self.create_client(CancelGoals, 'navigate_to_pose/_action/cancel_goal')
-            if not cancel_client.wait_for_service(timeout_sec=1.0):
-                self.get_logger().error("CancelGoal service not available")
+            self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+            if not self.nav_to_pose_client.wait_for_server(timeout_sec=1.0):
+                self.get_logger().error("NavigateToPose action server not available")
                 return
-
-            # CancelGoal 요청 생성 (빈 goal_info로 모든 목표 취소)
-            request = CancelGoals.Request()
-            request.goal_info = GoalInfo()  # goal_id와 stamp를 비워서 모든 목표 취소
-
-            # 취소 요청 보내기
-            future = cancel_client.call_async(request)
-            rclpy.spin_until_future_complete(self, future)
-            cancel_response = future.result()
+            cancel_future = self.nav_to_pose_client.cancel_all_goals_async()
+            rclpy.spin_until_future_complete(self, cancel_future)
+            cancel_response = cancel_future.result()
             if cancel_response is not None and len(cancel_response.goals_canceling) > 0:
                 self.get_logger().info("All navigation goals canceled")
             else:
                 self.get_logger().error("Failed to cancel navigation goals")
-
+                
         def emergency_stop_robot(self):
             cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
             stop_msg = Twist()
@@ -237,10 +228,10 @@ class MainWindow(QMainWindow):
         self.rear_frame_queue_robot2 = queue.Queue(maxsize=1)
 
         # 포트 번호 정의
-        UDP_PORT1 = 9996  # robot1 전면 카메라
-        UDP_PORT2 = 9997  # robot1 후면 카메라
-        UDP_PORT3 = 9998  # robot2 전면 카메라
-        UDP_PORT4 = 9999  # robot2 후면 카메라
+        UDP_PORT1 = 9998  # robot1 전면 카메라
+        UDP_PORT2 = 9999  # robot1 후면 카메라
+        UDP_PORT3 = 9996  # robot2 전면 카메라
+        UDP_PORT4 = 9997  # robot2 후면 카메라
 
         # FrameReceiver 인스턴스 생성
         self.front_receiver_robot1 = FrameReceiver(UDP_PORT1, self.front_frame_queue_robot1)
@@ -358,12 +349,12 @@ class MainWindow(QMainWindow):
         ########################################################################
         self.robot_info = {
             'robot1': {
-                'robot_id': 77, 
+                'robot_id': 63, 
                 'label' : [self.ui.label_status_b1, self.ui.label_mt_b1, self.ui.label_li_b1],
                 'mode_state_label': self.ui.label_mode_state_b1
             },
             'robot2': {
-                'robot_id': 5,
+                'robot_id': 77,
                 'label' : [self.ui.label_status_b2, self.ui.label_mt_b2, self.ui.label_li_b2],
                 'mode_state_label': self.ui.label_mode_state_b2
             }
@@ -555,6 +546,51 @@ class MainWindow(QMainWindow):
         map_y = map_height - map_y
 
         return map_x, map_y
+
+    # def draw_robot(self):
+    #     # 현재 label_12의 크기 가져오기
+    #     label_width = self.ui.label_12.width()
+    #     label_height = self.ui.label_12.height()
+
+    #     # 맵 이미지를 label_12의 크기에 맞게 스케일링
+    #     scaled_map = self.map_pixmap.scaled(label_width, label_height, Qt.KeepAspectRatio)
+
+    #     # 로봇 위치 그리기
+    #     updated_map = scaled_map.copy()
+
+    #     # QPainter 객체 생성
+    #     painter = QtGui.QPainter()
+    #     # QPainter 시작
+    #     painter.begin(updated_map)
+
+    #     for robot_name, (x, y) in self.robot_positions.items():
+    #         # 로봇 색상 설정 (원하는 대로 변경 가능)
+    #         if robot_name == 'robot1':
+    #             color = QColor(255, 0, 0)  # 빨간색
+    #         elif robot_name == 'robot2':
+    #             color = QColor(0, 255, 0)  # 초록색
+    #         elif robot_name == 'robot3':
+    #             color = QColor(0, 0, 255)  # 파란색
+    #         else:
+    #             color = QColor(0, 0, 0)  # 검은색
+
+    #         pen = QPen(color)
+    #         brush = QBrush(color)
+    #         painter.setPen(pen)
+    #         painter.setBrush(brush)
+
+    #         # 월드 좌표를 맵 이미지의 픽셀 좌표로 변환
+    #         map_x, map_y = self.world_to_map(x, y, updated_map.width(), updated_map.height())
+    #         print(f'Drawing {robot_name} at map coordinates: x={map_x}, y={map_y}')
+
+    #         robot_radius = 5  # 필요에 따라 조절
+    #         painter.drawEllipse(map_x - robot_radius, map_y - robot_radius, robot_radius * 2, robot_radius * 2)
+    #         print(f"Robot {robot_name} drawn")
+
+    #     painter.end()
+
+    #     # 업데이트된 이미지를 label_12에 설정
+    #     self.ui.label_12.setPixmap(updated_map)
 
     def draw_robot(self):
         # 현재 label_12의 크기 가져오기

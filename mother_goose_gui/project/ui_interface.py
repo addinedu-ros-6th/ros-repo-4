@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'interfaceLiLUAm.ui'
+## Form generated from reading UI file 'interfacedMnnut.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.3
 ##
@@ -1399,7 +1399,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.centerMenuPages.setCurrentIndex(1)
-        self.mainPages.setCurrentIndex(1)
+        self.mainPages.setCurrentIndex(0)
         self.rightMenuPages.setCurrentIndex(1)
 
 
