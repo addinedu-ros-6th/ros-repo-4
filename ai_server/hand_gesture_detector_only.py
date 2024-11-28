@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 # 저장된 모델 로드
-with open('best_model.pkl', 'rb') as f:
+with open('hand_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # 레이블 인코딩
