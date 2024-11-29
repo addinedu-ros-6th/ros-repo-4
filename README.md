@@ -13,8 +13,13 @@
 05. 적용기술
 <br>
 
-## 0. 시연영상 (유튜브 링크)
+## 0. 프로젝트 성과물
+
+### 0.1 시연영상 (유튜브 링크)
 [![스크린샷 2024-11-28 110135](https://github.com/user-attachments/assets/2300ec6b-9408-4ea6-a2ee-b705e801d13c)](https://youtu.be/AxfbNDppkFc)
+
+### 0.2 프로젝트 발표 자료 링크
+(https://docs.google.com/presentation/d/1-NSuIJxcLXHOLSJyQHhXC_K7vsJ-sBmlO_trMq6Lffg/edit?usp=drive_link)
 
 ## 1. About GOOGEESE  (팀원소개)
 
