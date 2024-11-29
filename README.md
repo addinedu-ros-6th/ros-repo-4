@@ -110,8 +110,40 @@
 #### Vector Pursuit Controller
 * Limitation of NAV2
 ![vector_persuit1](https://github.com/user-attachments/assets/c80ba92c-c24b-418d-8d8a-116698b22063)
-<관련 설명 명시 요망>
 
 * Task: Tuning Parameters
 ![vector_persuit2](https://github.com/user-attachments/assets/6dc6ee9e-9ec3-4700-ab10-885227eb1353)
-<관련 설명 명시 요망>
+
+* Limitation of DWB Local Planner
+![DWB_8x](https://github.com/user-attachments/assets/65d1c8ba-ab03-4ebc-883f-d52014d1acf7)
+
+1. 정확한 경로 추적
+
+* Task: Alternative to DWB, Vector Pursuit
+![DWB_vs_vector](https://github.com/user-attachments/assets/6aea2950-01aa-41e4-a587-93a9d2dd1335)
+
+(영상 링크)
+[![스크린샷 2024-11-29 100729](https://github.com/user-attachments/assets/4b751a7c-f9f2-4737-a179-dd8ac8990596)](https://www.youtube.com/watch?v=FzJ_Zio0tOg)
+
+2. 적극적인 충돌 감지
+![스크린샷 2024-11-29 100624](https://github.com/user-attachments/assets/135e9c59-9c9a-4e87-9db0-5b99a2507773)
+
+![obstacle_avoiding](https://github.com/user-attachments/assets/a96884fb-3070-4b3e-a2dd-0c147f05c1a9)
+![DWB_vs_vector_fps10_scale640](https://github.com/user-attachments/assets/243d549d-21bc-4471-b40c-65bf1145de54)
+
+* 추후 개선 고려 사항
+![try](https://github.com/user-attachments/assets/7217e787-22d1-4d1d-a35c-bfa42754c15a)
+
+####  Navigate To Waypoints In Behavior Tree
+
+* Navigation Tree Structure
+![Navigation Tree Structure](https://github.com/user-attachments/assets/f095783c-b4a3-4fa8-bd6c-57c95b02be66)
+
+#### Aruco Marker Following In Behavior Tree
+* Aruco Following Tree Structure
+![스크린샷 2024-11-29 103341](https://github.com/user-attachments/assets/c48e892d-c570-475e-9fb0-d3763ba9777b)
+* 주행 영상
+![aruco_detail](https://github.com/user-attachments/assets/2f71b48a-09c3-47a3-8250-19c0d006e9ac)
+
+#### Navigation & Aruco Marker Following Demo Video
+![Path-Tracking](https://github.com/user-attachments/assets/35dfbdd8-e667-4bf3-810a-e89ee92bac70)
