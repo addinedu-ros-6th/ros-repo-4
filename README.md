@@ -113,7 +113,7 @@
     - QR 에는 해당 로봇 ID 와 client web service 주소가 포함되어 있어, 스마트폰으로 해당 서비스에 바로 접속하며, 서버에는 해당 client 에 해당 로봇 ID 로 session ID 를 발급한다. 
     - Web Server 는 해당 Robot ID 와 Client 요청 상태를 State Controller 에 전달한다. 
     - State Controller 는 해당 내용을 `/Request` topic 으로 publish 함으로써 이를 구독하고 있는 모든 ROS node (ex. `Admin GUI`) 로 현재 사용하고 있는 로봇의 사용 정보가 공유 된다.
-* 사용자 열굴 등록
+* 사용자 얼굴 등록
     - 핸드폰 카메라를 사용하여 본인 사진을 촬영한다. 이는 나중에 도착지에서 수화물을 찾을 때 인증 얼굴과 동일 인물임을 확인하기 위해 사용된다. 
 * 사용자 항공권(QR) 등록
     - 전자 항공권 QR 을 스마트폰 카메라에 보여주면, 자동으로 인식하여 해당 정보를 확인한다.
@@ -133,19 +133,19 @@
 ### 4.2 주행
 ### 4.2.1 Auto Delivery
 * 다음의 구현 기술을 사용하여 개선된 자율 주행 성능으로 목적지까지 이동 (기술에 대한 상세한 설명은 5번 항목에 기재됨.)
-    - Nav2 Path-Tracking Algorithm  Vector Pursuit Plug in 적용및 파라미터 최적화 
+    - Nav2 Path-Tracking Algorithm  Vector Pursuit Plug-in 적용및 파라미터 최적화 
     - Waypoint 적용으로 좁은 구역 통과 성능 개선
     - 최종 목적지 Aruco Marker 인식 및 위치 조정를 통한 도착 위치 정밀도 개선
 ### 4.2.2 Follow
 *  딥러닝 Mediapipe 을 사용하여 실시간으로 검출된 landmark 정보를 사용하여, 신속한 객체 인식과 정확한 이동 알고리즘 구현 
 *  사람이 로봇의 움직임을 일시 정지하기 위해 손바닥을 보여 정지 요청을 하면 이를 인식하여 정지
 *  (기술에 대한 상세한 설명은 5번 항목에 기재됨.)
-![following_paper_person](https://github.com/user-attachments/assets/40b9d320-d5a9-4a80-8545-a9b69fb5ebf9)
+<img src="https://github.com/user-attachments/assets/40b9d320-d5a9-4a80-8545-a9b69fb5ebf9" alt="" width="500">
 
 ### 4.3 목적지 도착 / 짐 꺼내기 / 사용 종료
 ![기능3사용완료](https://github.com/user-attachments/assets/db64da2c-f7b5-4b5c-8525-d3bffe53e7f0)
 
-* 사용자 얼구 재확인
+* 사용자 얼굴 재확인
     - 도착지에서 최조 등록 사용자 얼굴과 일치하는지 확인한다. 
     - 사용자가 일치하는 경우에만 짐을 찾을 수 있다. 
     - 관련 딥러닝 기술로, YOLO face 나 Deepface 를 사용하여 내부적으로 처리 가능함을 확인하였으나, 기술조사 단계에서 현장의 배경, 조도, 각도, 닮은꼴 이미지 등으로 확인하였을 때, 가장 좋은 결과를 보인 AWS Rekognition API 를 사용하는 것으로 결정함.
@@ -162,8 +162,8 @@
 * 화면 상단에 공항 전체 Map 과 현재 로봇들의 위치를 표시함. 
 * 화면 하단에는 각 로봇의 다음 상태를 확인가능
     - 공항에 배치 동작 중인 로봇
-    - 로봇 motor 상태 
-    - 로봇 lidar 상태 
+    - 로봇 Motor 상태 
+    - 로봇 Lidar 상태 
     - 사용자 로봇 이용 정보 (state) 
 #### 4.4.2 로봇 영상 실시간 확인 및 긴급제동
 * 화면 상단에 각 로봇 전송하는 영상을 확인 가능
