@@ -105,11 +105,97 @@
 ![기술스택](https://github.com/user-attachments/assets/a7fc6008-3829-4968-a419-c5c6d665ebaf)
 
 ## 4. 프로젝트 기능
+### 4.1 사용자 등록 /  짐싣기 / 주행모드 결정
+![기능1등록](https://github.com/user-attachments/assets/d0e2ea97-74b8-4925-860f-88def0d14ce6)
+
+* Client GUI 접속
+    - 사용자는 공항에서 출국심사를 마치고 출국장에 나오면 주변에 정차된 로봇의 QR 을 스캔한다.
+    - QR 에는 해당 로봇 ID 와 client web service 주소가 포함되어 있어, 스마트폰으로 해당 서비스에 바로 접속하며, 서버에는 해당 client 에 해당 로봇 ID 로 session ID 를 발급한다. 
+    - Web Server 는 해당 Robot ID 와 Client 요청 상태를 State Controller 에 전달한다. 
+    - State Controller 는 해당 내용을 `/Request` topic 으로 publish 함으로써 이를 구독하고 있는 모든 ROS node (ex. `Admin GUI`) 로 현재 사용하고 있는 로봇의 사용 정보가 공유 된다.
+* 사용자 열굴 등록
+    - 핸드폰 카메라를 사용하여 본인 사진을 촬영한다. 이는 나중에 도착지에서 수화물을 찾을 때 인증 얼굴과 동일 인물임을 확인하기 위해 사용된다. 
+* 사용자 항공권(QR) 등록
+    - 전자 항공권 QR 을 스마트폰 카메라에 보여주면, 자동으로 인식하여 해당 정보를 확인한다.
+* 입력 정보 확인
+    - 얼굴 사진과 항공권 정보가 맞는지 다시 한번 확인. 
+    - 틀리다면 No 를 눌러서 초기화면으로 되돌아 간다.
+    - 맞다면 Yse 를 눌러 짐싣기 화면으로 이동한다. 동시에 해당 정보는 DB 에 저장된다. 
+* 짐싣기
+    - 해당 페이지로 이동하면 바로 Cargo Controller Node 에 의해 cargo 문이 열린다. 
+    - Corgo Controller 는 현재 근접 센서에 의한 화물 적재 여부, servor motor 에 의한 문 열림/닫힘 상태를 `/Response` topic 으로 발행하여 State Controller 에서 현재 Cargo 상태를 확인, 해당 정보를 Client GUI Web Server 에 전송하여 GUI 상 상태를 표시해 준다. 
+    - 짐을 싣고나서, 닫힘버튼을 누르면 Cargo 는 닫히게 된다. 
+    - 문이 완전히 닫히면, 닫힘 상태가 State Controller 에 확인되면 Client GUI 다음 페이지로 이동한다.
+* 사용자 모드 선택
+    - Auto Delivery : 로봇이 알아서 비행기 Gate 까지 이동
+    - Follow : 사용자 뒤를 쫓아가면 짐을 싣고 이동
+  
+### 4.2 주행
+### 4.2.1 Auto Delivery
+* 다음의 구현 기술을 사용하여 개선된 자율 주행 성능으로 목적지까지 이동 (기술에 대한 상세한 설명은 5번 항목에 기재됨.)
+    - Nav2 Path-Tracking Algorithm  Vector Pursuit Plug in 적용및 파라미터 최적화 
+    - Waypoint 적용으로 좁은 구역 통과 성능 개선
+    - 최종 목적지 Aruco Marker 인식 및 위치 조정를 통한 도착 위치 정밀도 개선
+### 4.2.2 Follow
+*  딥러닝 Mediapipe 을 사용하여 실시간으로 검출된 landmark 정보를 사용하여, 신속한 객체 인식과 정확한 이동 알고리즘 구현 
+*  사람이 로봇의 움직임을 일시 정지하기 위해 손바닥을 보여 정지 요청을 하면 이를 인식하여 정지
+*  (기술에 대한 상세한 설명은 5번 항목에 기재됨.)
+![following_paper_person](https://github.com/user-attachments/assets/40b9d320-d5a9-4a80-8545-a9b69fb5ebf9)
+
+### 4.3 목적지 도착 / 짐 꺼내기 / 사용 종료
+![기능3사용완료](https://github.com/user-attachments/assets/db64da2c-f7b5-4b5c-8525-d3bffe53e7f0)
+
+* 사용자 얼구 재확인
+    - 도착지에서 최조 등록 사용자 얼굴과 일치하는지 확인한다. 
+    - 사용자가 일치하는 경우에만 짐을 찾을 수 있다. 
+    - 관련 딥러닝 기술로, YOLO face 나 Deepface 를 사용하여 내부적으로 처리 가능함을 확인하였으나, 기술조사 단계에서 현장의 배경, 조도, 각도, 닮은꼴 이미지 등으로 확인하였을 때, 가장 좋은 결과를 보인 AWS Rekognition API 를 사용하는 것으로 결정함.
+* 짐 꺼내기
+    - 해당 페이지에 이동하면서 바로 Cargo Controller node 에 의해 문은 열리게 된다. 
+    - 해당 작업 내부 프로세스는 앞에서 설명한 `짐싣기` 와 동일하게 동작
+* 사용 종료
+    - 사용자가 사용 종료 버튼을 누르면 로봇은 `return` 모드로 전환되어 출발 위치로 돌아감.
+
+### 4.4 관제센터 (Admin Gui)
+![mothergui](https://github.com/user-attachments/assets/528a61a3-a751-4683-aad5-aed7cb3b2718)
+
+#### 4.4.1 로봇 위치 및 상태 표시
+* 화면 상단에 공항 전체 Map 과 현재 로봇들의 위치를 표시함. 
+* 화면 하단에는 각 로봇의 다음 상태를 확인가능
+    - 공항에 배치 동작 중인 로봇
+    - 로봇 motor 상태 
+    - 로봇 lidar 상태 
+    - 사용자 로봇 이용 정보 (state) 
+#### 4.4.2 로봇 영상 실시간 확인 및 긴급제동
+* 화면 상단에 각 로봇 전송하는 영상을 확인 가능
+* 각 로봇의 운행을 멈추게 하는 하단 버튼
+
 ## 5. 적용기술
 ### 5.1 Deeplearning
 #### 5.1.1. Person Tracking
+![스크린샷 2024-12-03 160124](https://github.com/user-attachments/assets/db94e02c-82c7-4bc5-b5c1-e30e0efb15af)
+
+1. 기술 조사
+* Tracker 모델 사용 
+  - YOLO Tracker, Deepsort 등의 딥러닝 모델을 사용하여 객체 추적을 진행하는 경우, Frame 내 모든 인물에 대한 ID 가 부여됨. 
+  - 특정 ID 객체만 추적하기 위해서는 해당 객체의 특징(ex. 얼굴, 의상 등)을 다시 검출하고 해당 정보가 일치하는 객체을 확인 해야 하므로, 얼굴 인식, 의상 검출 등의 추가 모델을 함께 동작해야 함.
+  - 이렇게 다중 모델 적용시, 추적 인물에 대한 상세 정보를 확인하여 선별적으로 추적을 진행할 수 있음.
+  - 그러나 현재 H/W 성능상 이렇게 복합적으로 구현했을 때, 처리시간이 10 FPS 이하로 떨어져서 매 loop 당 로봇이 추적해야 하는 변위가 커지며, Deepsort 모델 내 칼만 필터에 의해 예측된 다음 위치 값에 대한 정확도가 매우 떨어져 추적이 어려워짐을 확인.        
+  - 아울러 관련 객체 인식의 경우, 모든 신체을 포함한 bounding box 정보를 확보하게 되는데 팔을 벌리거나, 신체를 숙이는 등의 동작에서 bounding box 의 중심좌표가 실제 신체의 무게중심에서 크게 벗어나는 현상이 발생하여, 이동 중심 좌표 검출을 위한 추가 모델 검토가 필요할 수 있음을 확인함.
+
+* 신체 탐지 및 추적 data 확보를 위한 단일 & 경량화 모델 사용 (Mediapipe)
+    - 추적 로봇 실제 사용 환경을 고려 시, 1미터 이내 간격을 유지하여 사람을 추적해야 하므로, 실제 사용환경에서 사용자가 로봇의 영상에서 일반적으로 중심의 위치에 가장 큰 객체로 인식됨을 확인함 (2024 로보월드)
+    - 해당 사용 조건에서 Mediapipe pose 모델의 경우 중심위치의 가장 큰 단일 객체만 자동으로 인식하므로 다중 모델 적용 없이 (현 프로젝트 기준) 적용 가능함을 확인함.
+    - 좌우 어깨 와 골판 landmark 좌표를 통하여, 인물 상체 무게 중심 및 상대적 인물 크기를 계산
+    - 상대적 인물 사이즈 및 위치 정보를 사용하여, 로봇의 상대 위치를 조정하도록 구현함. 
 
 #### 5.1.2 Stop Gesture
+![스크린샷 2024-12-03 162633](https://github.com/user-attachments/assets/0b6aec81-a7e6-4919-8f48-70754e8e1f7e)
+
+* Mediapipe Hand  학습 데이터를 사용한 Decision Tree 생성 (classification : ‘pause’, ‘opposite_pause’, ‘fist’)
+* ‘pause’  class 인식된 동작에 대해 현재 조건에 맞게 추가 알고리즘 적용 
+  - 좀더 명시적으로 카메라에 손가락을 펴고, 손바닥을 보이는 자세를 취했을 때만 동작하도록 pause 상태를 다음과 같은 상태로 제한시킴.
+    - 손목 landmark (0) 이 로봇이 따라가는 무게 중심 좌표보다 높으며,
+    - 다섯 손가락이 모두 위쪽을 향해 펴져 있는 경우
 
 ### 5.2 Path-Tracking Algorithm
 #### Vector Pursuit Controller
