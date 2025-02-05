@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-import mysql.connector
+# import mysql.connector
 from fastapi.templating import Jinja2Templates
 
 from routers import pages, api, websockets
@@ -38,3 +38,9 @@ app.include_router(websockets.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# from fastapi import FastAPI
+# from fastapi.staticfiles import StaticFiles
+
+# app = FastAPI()
+# app.mount("/", StaticFiles(directory="public", html = True), name="static")

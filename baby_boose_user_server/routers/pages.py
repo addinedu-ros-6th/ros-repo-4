@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from state.shared_state import session_data, send_msg_q, TEMP_ROBOT_ID, GATE
 from utils.helpers import get_user_id
 import os
-import mysql.connector
+# import mysql.connector
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -19,13 +19,13 @@ DB_CONFIG = {
     "password" : "",
     "database" : "googeese",
 }
-def get_db_connection():
-    """Establish a database connection."""
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        return conn
-    except mysql.connector.Error as err:
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {err}")
+# def get_db_connection():
+#     """Establish a database connection."""
+#     try:
+#         conn = mysql.connector.connect(**DB_CONFIG)
+#         return conn
+#     except mysql.connector.Error as err:
+#         raise HTTPException(status_code=500, detail=f"Database connection failed: {err}")
 
 # 시작 화면 start.html
 # uvicorn main:app --reload

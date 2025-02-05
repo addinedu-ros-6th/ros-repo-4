@@ -61,8 +61,8 @@
 ### 2.1 협업 Confluence
 ![conf](https://github.com/user-attachments/assets/4f0d9953-99dc-499f-a6b5-7814cc773b29)
 
-### 3.1 요구 기능 
-#### 3.1.1 Driving Mode
+### 2.3 요구 기능 
+#### 2.3.1 Driving Mode
 <img src="https://github.com/user-attachments/assets/197d79a9-a81c-46b3-8c3e-44ef1c303188" alt="샘플 이미지" height="150">
 
 * Auto Delivery : 로봇이 항공권 정보를 확인하고 탑승 게이트까지 알아서 짐을 배달
@@ -70,24 +70,24 @@
 * Pause at Stop Gesture : Follow 중 사용자가 잠시 따라오는 기능을 멈추고 싶을 때, 로봇에 멈춤 신호를 손동작으로 보내면 로봇이 해당 동작을 인식하고 멈추는 기능
 * Return : 임무를 완수하고 출발지로 로봇이 알아서 이동하는 기능
 
-#### 3.1.2 Cargo Security
+#### 2.3.2 Cargo Security
 <img src="https://github.com/user-attachments/assets/007b1fce-2db6-4920-8f30-3ccefaf6ebcd" alt="샘플 이미지" height="150">
 
 * Cargo Lock / Unlock : 운송 중 화물은 밀폐 공간에 안전하게 보관되어야 함. 
 * Face Recognition : 화물을 찾을 때는 안면 인증 방식으로 보안성이 뛰어나고 편리해야 함. 
 
-#### 3.1.3 Admin System
+#### 2.3.3 Admin System
 <img src="https://github.com/user-attachments/assets/3b0a11da-64ab-4abf-8340-93f2104df68c" alt="샘플 이미지" height="150">
 
 * Robot State Monitoring : 운행 중인 모든 로봇의 위치, 상태 등의 정보가 모니터링 되어야 함. 
 * Admin Emergency Stop : 긴급상황 발생시, 관제 센터에서 각 로봇의 운행을 정지 시킬 수 있어야 함. 
 
-### 3.2 Operating Scenario
+### 2.4 Operating Scenario
 ![scenario1](https://github.com/user-attachments/assets/2a2071af-91df-4fb5-b0c6-d1760eb2168e)
 
 ## 3. 프로젝트 설계
 ### 3.1 System Architecture
-![system_architecture](https://github.com/user-attachments/assets/f5710d4a-1c00-4a2d-a854-46ec0dbbbc66)
+![system_architecture](https://github.com/user-attachments/assets/b104646a-605a-455a-9e72-550979f78594)
 
 ### 3.2 State Machine
 ![state_machine](https://github.com/user-attachments/assets/c823c2f7-a666-42df-b3ac-c2424b254c65)
